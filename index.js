@@ -12,6 +12,7 @@ app.use(cors())
 app.post('/webhook/livechat', async (req, res) => {
   try {
     const { ip, url } = req.body;
+    return res.send(ip)
     const datazappResponse = await axios.post(
       'https://api.datazapp.com/reverse-ip-append',
       { ip },
