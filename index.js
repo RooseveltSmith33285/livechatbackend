@@ -11,10 +11,7 @@ app.use(cors());
 // Handle POST requests (LiveChat webhook)
 app.post('/webhook/livechat', async (req, res) => {
   try {
-    const { ip, url } = req.body; // Data from LiveChat
-    console.log('Received IP:', ip);
-    console.log('Full payload:', req.body);
-    res.send(ip); // Respond with the IP
+ console.log("webhook working")
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error processing lead.' });
