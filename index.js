@@ -8,9 +8,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-// Handle POST requests (LiveChat webhook)
+
 app.post('/webhook/livechat', async (req, res) => {
   try {
+    console.log(req.body);
  console.log("webhook working")
   } catch (err) {
     console.error(err);
