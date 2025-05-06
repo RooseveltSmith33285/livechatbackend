@@ -11,7 +11,8 @@ app.use(cors());
 
 app.post('/webhook/livechat', async (req, res) => {
   try {
-    console.log(req.body);
+    const chat = req.body.payload.chat;
+    console.log(chat);
  console.log("webhook working")
  return res.status(200).json({
   data:req.body
