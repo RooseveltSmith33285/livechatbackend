@@ -13,6 +13,9 @@ app.post('/webhook/livechat', async (req, res) => {
   try {
     console.log(req.body);
  console.log("webhook working")
+ return res.status(200).json({
+  data:req.body
+ })
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error processing lead.' });
