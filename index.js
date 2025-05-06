@@ -9,7 +9,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors())
 
-app.post('/webhook/livechat', async (req, res) => {
+app.get('/webhook/livechat', async (req, res) => {
   try {
     const { ip, url } = req.body;
     console.log(ip)
