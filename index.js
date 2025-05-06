@@ -49,7 +49,7 @@ app.post('/webhook/livechat', async (req, res) => {
 
     console.log('Visitor IP:', ip);
     console.log('Longest visited page:', longestPage);
-
+    console.log('Full payload:', JSON.stringify(req.body, null, 2));
     return res.status(200).json({
       ip,
       longestPage: {
