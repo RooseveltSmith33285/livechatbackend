@@ -12,8 +12,9 @@ app.use(cors());
 app.post('/webhook/livechat', async (req, res) => {
   try {
     const chat = req.body.payload.chat;
-    console.log(chat);
- console.log("webhook working")
+    const ip = chat.properties?.ip || 'IP not available';
+    console.log(ip);
+    console.log('Full payload:', JSON.stringify(req.body, null, 2));
  return res.status(200).json({
   data:req.body
  })
