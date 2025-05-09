@@ -12,7 +12,7 @@ app.use(cors());
 app.post('/webhook/livechat', async (req, res) => {
   try {
     const chat = req.body.payload.chat;
-    const ip = chat.users[0]?.last_visit?.ip || 'IP not available';
+    let ip = chat.users[0]?.last_visit?.ip || 'IP not available';
     const lastPages = chat.users[0]?.last_visit?.last_pages || [];
     const chatCreatedAt = new Date(chat.thread.created_at);
 
@@ -48,10 +48,8 @@ app.post('/webhook/livechat', async (req, res) => {
       }
     }
 
-    console.log('Visitor IP:', ip);
-    console.log('Longest visited page:', longestPage);
-    console.log('Full payload:', JSON.stringify(req.body, null, 2));
-   
+    
+   ip='172.225.30.54'
     const datazappResponse = await axios.post(
       'https://secureapi.datazapp.com/Appendv2',
       {
