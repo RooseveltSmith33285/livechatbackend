@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
+const request=require('request')
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -50,6 +51,19 @@ app.post('/webhook/livechat', async (req, res) => {
     console.log('Visitor IP:', ip);
     console.log('Longest visited page:', longestPage);
     console.log('Full payload:', JSON.stringify(req.body, null, 2));
+   
+    const datazappResponse = await axios.post(
+      'https://secureapi.datazapp.com/Appendv2',
+      {
+        ApiKey: "NKBTHXMFEJ",         
+        AppendModule: "ReverseIPAppend",
+        AppendType: "3",
+        Data: [{ IP: ip }]           
+      }
+    );
+console.log(datazappResponse.data.ResponseDetail.Data)
+
+
     return res.status(200).json({
       ip,
       longestPage: {
@@ -61,11 +75,14 @@ app.post('/webhook/livechat', async (req, res) => {
     });
     
   } catch (err) {
-    console.error(err);
+    console.error(err.message);
     res.status(500).json({ error: 'Error processing lead.' });
   }
 });
 
+
+
+
 app.listen(5000, () => {
-  console.log('API server running on port 5000'); // Fixed typo (500 → 5000)
+  console.log('API server running on port 5000'); 
 });
