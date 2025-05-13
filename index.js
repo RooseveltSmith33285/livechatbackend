@@ -65,11 +65,11 @@ async function createLeadPDF(data, pageUrl) {
 app.post('/webhook/livechat', async (req, res) => {
   try {
     let data;
-    const mailgun = new Mailgun(FormData);
-    const mg = mailgun.client({
-      username: "api",
-      key: process.env.MAILGUN_API_KEY,
-    });
+    // const mailgun = new Mailgun(FormData);
+    // const mg = mailgun.client({
+    //   username: "api",
+    //   key: process.env.MAILGUN_API_KEY,
+    // });
     if(!req?.body?.payload){
       return res.status(400).json({
         error:"No Lead found"
