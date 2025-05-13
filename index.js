@@ -180,6 +180,10 @@ if(response.data.Records[0]?.City?.trim()?.length>0){
 
 if(data){
 
+  console.log("melisa data")
+  console.log(response?.data?.Records[0])
+  console.log("datazapp data")
+  console.log(datazappResponse?.data?.ResponseDetail?.Data)
 const pdfPath = await createLeadPDF(data, longestPage.url);
 const pdfBuffer = fs.readFileSync(pdfPath);
 const fileContent = fs.readFileSync(pdfPath);
