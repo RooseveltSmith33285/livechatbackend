@@ -65,11 +65,11 @@ async function createLeadPDF(data, pageUrl) {
 app.post('/webhook/livechat', async (req, res) => {
   try {
     let data;
-    // const mailgun = new Mailgun(FormData);
-    // const mg = mailgun.client({
-    //   username: "api",
-    //   key: process.env.MAILGUN_API_KEY,
-    // });
+    const mailgun = new Mailgun(FormData);
+    const mg = mailgun.client({
+      username: "api",
+      key: '6f7cb9215d200cc70bddd837ceaf5c52-a908eefc-7d108d28',
+    });
     if(!req?.body?.payload){
       return res.status(400).json({
         error:"No Lead found"
@@ -114,7 +114,7 @@ app.post('/webhook/livechat', async (req, res) => {
 
     console.log(ip)
     console.log(longestPage)
-    console.log(chat)
+    console.log(chat.users[0].last_visit)
 
 
 // let ip="98.97.9.235"
@@ -208,7 +208,7 @@ app.post('/webhook/livechat', async (req, res) => {
 //   fs.unlinkSync(pdfPath);
 // }
 return res.status(200).json({
-  messagae:"Lead sucessfully sent"
+  message:"Sucessfully"
 })
 
   } catch (err) {
