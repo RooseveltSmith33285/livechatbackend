@@ -68,7 +68,7 @@ app.post('/webhook/livechat', async (req, res) => {
     const mailgun = new Mailgun(FormData);
     const mg = mailgun.client({
       username: "api",
-      key: '6f7cb9215d200cc70bddd837ceaf5c52-a908eefc-7d108d28',
+      key: process.env.MAILGUN_API_KEY,
     });
     if(!req?.body?.payload){
       return res.status(400).json({
