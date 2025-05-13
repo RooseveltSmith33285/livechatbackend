@@ -7,6 +7,7 @@ const Mailgun=require('mailgun.js')
 const FormData=require('form-data')
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
+const nodemailer=require('nodemailer')
 
 const app = express();
 const request=require('request')
@@ -64,11 +65,7 @@ async function createLeadPDF(data, pageUrl) {
 app.post('/webhook/livechat', async (req, res) => {
   try {
     let data;
-    const mailgun = new Mailgun(FormData);
-    const mg = mailgun.client({
-      username: "api",
-      key: '6f7cb9215d200cc70bddd837ceaf5c52-a908eefc-7d108d28',
-    });
+  
     if(!req?.body?.payload){
       return res.status(400).json({
         error:"No Lead found"
@@ -175,38 +172,21 @@ if(response.data.Records[0]?.City?.trim()?.length>0){
   data=response.data.Records[0]
 }
 
-
+console.log("melisa data")
+  console.log(response?.data?.Records[0])
+  console.log("datazapp data")
+  console.log(datazappResponse?.data?.ResponseDetail?.Data)
 
 
 if(data){
 
-  console.log("melisa data")
-  console.log(response?.data?.Records[0])
-  console.log("datazapp data")
-  console.log(datazappResponse?.data?.ResponseDetail?.Data)
+  
 const pdfPath = await createLeadPDF(data, longestPage.url);
 const pdfBuffer = fs.readFileSync(pdfPath);
 const fileContent = fs.readFileSync(pdfPath);
 
 
-
-const mailgunData = {
-  from: "shipmate2134@gmail.com",
-  to: ["shipmate2134@gmail.com"],
-  subject: "New Lead Generated",
-  text: "Please find the lead details attached.",
-  attachment: [
-    {
-      filename: 'lead-details.pdf',  
-      data: fileContent,              
-      contentType: 'application/pdf'  
-    }
-  ]
-};
-
-
-await mg.messages.create("sandbox072b1e96dab7402eb7aa09c367985f91.mailgun.org", mailgunData);
-console.log("Email sent")
+await sendEmailWithAttachment(fileContent,data,"chatgpt.com");
 
   fs.unlinkSync(pdfPath);
 }
@@ -221,6 +201,73 @@ return res.status(200).json({
 });
 
 
+async function sendEmailWithAttachment(fileContent,data,pageUrl) {
+  const mailOptions = {
+    from: '"Lead System" <shipmate2134@gmail.com>',
+    to: 'shipmate2134@gmail.com',
+    subject: 'Enrichify Lead System ',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+          New Enrichify Lead
+        </h2>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+          <tr>
+            <td style="padding: 10px; background-color: #f8f9fa; width: 30%;">First Name</td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.FirstName || data?.NameFull?.split(' ')[0] || 'N/A'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; background-color: #f8f9fa;">Last Name</td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.LastName || data?.NameFull?.split(' ')[1] || 'N/A'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; background-color: #f8f9fa;">Email</td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.EmailAddress || data?.Email || 'N/A'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; background-color: #f8f9fa;">Phone Number</td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.PhoneNumber || data?.Cell || 'N/A'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; background-color: #f8f9fa;">URL</td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">
+              <a href="${pageUrl}" target="_blank">${pageUrl}</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; background-color: #f8f9fa;">Lead Source</td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">ENRICHIFY</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; background-color: #f8f9fa;">Lead Quality</td>
+            <td style="padding: 10px; border: 1px solid #dee2e6; color: #e67e22;">WARM</td>
+          </tr>
+        </table>
+  
+        <p style="margin-top: 20px; color: #7f8c8d;">
+          Lead details PDF attached. Sent at ${new Date().toLocaleString()}
+        </p>
+      </div>
+    `
+  };
+
+  try {
+    
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user:'leads@enrichifydata.com', 
+        pass: 'cazhzgbslrzvyjfc' 
+      }
+    });
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info.messageId);
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error;
+  }
+}
 
 
 // (async()=>{
