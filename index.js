@@ -111,101 +111,100 @@ app.post('/webhook/livechat', async (req, res) => {
       }
     }
 
-    console.log(ip)
-    console.log(longestPage)
-    console.log(chat.users[0].last_visit)
+    
+    console.log(chat)
 
 
+// let ip="98.97.9.235"
+//     const datazappResponse = await axios.post(
+//       'https://secureapi.datazapp.com/Appendv2',
+//       {
+//         ApiKey: "NKBTHXMFEJ",           
+//         AppendModule: "ReverseIPAppend",
+// IsMaximizedAppend:true,
+//         AppendType: "2",
+//         Data: [{ IP: ip }]           
+//       }
+//     );
 
-    const datazappResponse = await axios.post(
-      'https://secureapi.datazapp.com/Appendv2',
-      {
-        ApiKey: "NKBTHXMFEJ",           
-        AppendModule: "ReverseIPAppend",
-IsMaximizedAppend:true,
-        AppendType: "2",
-        Data: [{ IP: ip }]           
-      }
-    );
 
-
-if(datazappResponse?.data?.ResponseDetail?.Data!=null && datazappResponse?.data?.ResponseDetail?.Data[0]?.FirstName?.length>0){
+// if(datazappResponse?.data?.ResponseDetail?.Data!=null && datazappResponse?.data?.ResponseDetail?.Data[0]?.FirstName?.length>0){
  
-  data=datazappResponse.data?.ResponseDetail?.Data[0];
-}
+//   data=datazappResponse.data?.ResponseDetail?.Data[0];
+// }
 
 
 
-let firstName=datazappResponse.data.ResponseDetail.Data[0]?.FirstName
-let lastName=datazappResponse.data.ResponseDetail.Data[0]?.LastName
-let address=datazappResponse.data.ResponseDetail.Data[0]?.Address
-let email=datazappResponse.data.ResponseDetail.Data[0]?.Email
-let phone=datazappResponse.data.ResponseDetail.Data[0]?.Phone
-let city=datazappResponse.data.ResponseDetail.Data[0]?.City
-let state=datazappResponse.data.ResponseDetail.Data[0]?.State
+// let firstName=datazappResponse.data.ResponseDetail.Data[0]?.FirstName
+// let lastName=datazappResponse.data.ResponseDetail.Data[0]?.LastName
+// let address=datazappResponse.data.ResponseDetail.Data[0]?.Address
+// let email=datazappResponse.data.ResponseDetail.Data[0]?.Email
+// let phone=datazappResponse.data.ResponseDetail.Data[0]?.Phone
+// let city=datazappResponse.data.ResponseDetail.Data[0]?.City
+// let state=datazappResponse.data.ResponseDetail.Data[0]?.State
 
 
-const params = {
-  format: "json",
-  id: "DvHdwMzHAPvQ4quyNYq8a4**", 
-  act: "Append,Check,Verify,Move",
-  cols: "AddressLine1,City,State,PostalCode,EmailAddress,TopLevelDomain",
-  first: firstName,
-  last: lastName,
-  full:firstName+' '+lastName,
-  a1: address,
-  city:city,
-  state: state,
-  email: email,
-  phone: phone,
-  ip: ip
-};
+// const params = {
+//   format: "json",
+//   id: "DvHdwMzHAPvQ4quyNYq8a4**", 
+//   act: "Append,Check,Verify,Move",
+//   cols: "AddressLine1,City,State,PostalCode,EmailAddress,TopLevelDomain",
+//   first: firstName,
+//   last: lastName,
+//   full:firstName+' '+lastName,
+//   a1: address,
+//   city:city,
+//   state: state,
+//   email: email,
+//   phone: phone,
+//   ip: ip
+// };
 
 
-const response = await axios.get(
-  "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
-  { params }
-);
+// const response = await axios.get(
+//   "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
+//   { params }
+// );
 
 
 
   
-if(response.data.Records[0]?.City?.trim()?.length>0){
+// if(response.data.Records[0]?.City?.trim()?.length>0){
 
-  data=response.data.Records[0]
-}
-
-
-
-
-if(data){
-
-const pdfPath = await createLeadPDF(data, longestPage.url);
-const pdfBuffer = fs.readFileSync(pdfPath);
-const fileContent = fs.readFileSync(pdfPath);
+//   data=response.data.Records[0]
+// }
 
 
 
-const mailgunData = {
-  from: "shipmate2134@gmail.com",
-  to: ["shipmate2134@gmail.com"],
-  subject: "New Lead Generated",
-  text: "Please find the lead details attached.",
-  attachment: [
-    {
-      filename: 'lead-details.pdf',  
-      data: fileContent,              
-      contentType: 'application/pdf'  
-    }
-  ]
-};
+
+// if(data){
+
+// const pdfPath = await createLeadPDF(data, 'https://chatgpt.com');
+// const pdfBuffer = fs.readFileSync(pdfPath);
+// const fileContent = fs.readFileSync(pdfPath);
 
 
-await mg.messages.create("sandbox072b1e96dab7402eb7aa09c367985f91.mailgun.org", mailgunData);
+
+// const mailgunData = {
+//   from: "shipmate2134@gmail.com",
+//   to: ["shipmate2134@gmail.com"],
+//   subject: "New Lead Generated",
+//   text: "Please find the lead details attached.",
+//   attachment: [
+//     {
+//       filename: 'lead-details.pdf',  
+//       data: fileContent,              
+//       contentType: 'application/pdf'  
+//     }
+//   ]
+// };
 
 
-  fs.unlinkSync(pdfPath);
-}
+// await mg.messages.create("sandbox072b1e96dab7402eb7aa09c367985f91.mailgun.org", mailgunData);
+
+
+//   fs.unlinkSync(pdfPath);
+// }
 return res.status(200).json({
   message:"Sucessfully"
 })
