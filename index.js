@@ -221,10 +221,12 @@ await leadsModel.create(data);
 
   
  
-  return res.status(200).json({
-    message:"Sucessfully"
-  })
+ 
 }
+
+return res.status(200).json({
+  message:"Sucessfully"
+})
 
 
   } catch (err) {
