@@ -7,7 +7,7 @@ const cors = require('cors');
 const Mailgun=require('mailgun.js')
 const mongoose=require('mongoose')
 const FormData=require('form-data')
-const connect=require('./connection')
+
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const nodemailer=require('nodemailer')
@@ -16,7 +16,12 @@ const app = express();
 const request=require('request')
 app.use(bodyParser.json());
 app.use(cors());
-connect
+mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('Connected to MongoDB Atlas'))
+.catch(err => console.log('Error connecting to MongoDB Atlas:', err));
 async function createLeadPDF(data, pageUrl) {
  
   return new Promise((resolve, reject) => {
