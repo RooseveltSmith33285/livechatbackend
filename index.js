@@ -129,7 +129,7 @@ app.get('/leads', async (req, res) => {
 
 
 app.post('/webhook/livechat', async (req, res) => {
-  const session=await mongoose.startSession()
+  
   try {
     let data;
   
@@ -262,13 +262,13 @@ const pdfBuffer = fs.readFileSync(pdfPath);
 const fileContent = fs.readFileSync(pdfPath);
 
 
-session.startTransaction();
+
 await sendEmailWithAttachment(fileContent,data,longestPage.url);
 await leadsModel.create(data);
 
-await session.commitTransaction();
+
   fs.unlinkSync(pdfPath);
-  await session.endSession();
+ 
   return res.status(200).json({
     message:"Sucessfully"
   })
@@ -276,8 +276,7 @@ await session.commitTransaction();
 
 
   } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
+   
     console.error(err.message);
     res.status(500).json({ error: 'Error processing lead.' });
   }
