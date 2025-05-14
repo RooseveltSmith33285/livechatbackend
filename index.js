@@ -133,96 +133,12 @@ app.post('/webhook/livechat', async (req, res) => {
   try {
     let data;
   
-    // if(!req?.body?.payload){  
-    //   return res.status(400).json({
-    //     error:"No Lead found"
-    //   })
-    // }
-    const chat={
-      id: 'SV0UAO7XL1',
-      users: [
-        {
-          id: '86afaacf-ae76-4864-aa38-7366dfb54e82',
-          name: 'ROOSEVELT SMITH',
-          email: 'shipmate2134@gmail.com',
-          present: true,
-          last_seen_timestamp: 1747211266,
-          type: 'customer',
-          created_at: '2025-05-06T17:34:52.154875Z',
-          last_visit: [Object],
-          statistics: [Object],
-          agent_last_event_created_at: '1970-01-01T00:00:00.000000Z',
-          customer_last_event_created_at: '2025-05-14T08:27:46.192004Z'
-        },
-        {
-          id: 'david.ray@flatoutmotorcycles.com',
-          name: 'David Ray',
-          email: 'david.ray@flatoutmotorcycles.com',
-          present: false,
-          last_seen_timestamp: 1747142121,
-          type: 'agent',
-          avatar: 'https://cdn.files-text.com/api/accounts/avatars/20990ce7-fb81-4d3e-a2de-34498c42bacf/7d6fa6b9-e9b4-4997-b7f8-d2e063bb76da/28fe7d2e-a212-4820-a71e-06a57d731d2c.png',
-          routing_status: 'not_accepting_chats',
-          visibility: 'all'
-        },
-        {
-          id: 'donna.burton@flatoutmotorcycles.com',
-          name: 'Donna Burton',
-          email: 'donna.burton@flatoutmotorcycles.com',
-          present: false,
-          last_seen_timestamp: 0,
-          type: 'agent',
-          avatar: 'https://cdn.files-text.com/api/accounts/avatars/20990ce7-fb81-4d3e-a2de-34498c42bacf/d866dea5-70a6-450b-b9bd-40d576d4488d/bd9dd638-088c-44c6-836f-ee96f95980fd.png',
-          routing_status: 'offline',
-          visibility: 'all'
-        },
-        {
-          id: 'eric.lowe@flatoutmotorcycles.com',
-          name: 'Eric Lowe',
-          email: 'eric.lowe@flatoutmotorcycles.com',
-          present: false,
-          last_seen_timestamp: 1746556808,
-          type: 'agent',
-          avatar: 'https://cdn.files-text.com/api/accounts/avatars/20990ce7-fb81-4d3e-a2de-34498c42bacf/2a588f91-215b-47bb-b202-9027677ada23/0702b0d1-9b08-49fd-8e64-c91d348cc9c1.png',
-          routing_status: 'offline',
-          visibility: 'agents'
-        },
-        {
-          id: 'ken.bacon@flatoutmotorcycles.com',
-          name: 'Ken Bacon',
-          email: 'ken.bacon@flatoutmotorcycles.com',
-          present: false,
-          last_seen_timestamp: 1746556809,
-          type: 'agent',
-          avatar: 'https://cdn.files-text.com/api/accounts/avatars/20990ce7-fb81-4d3e-a2de-34498c42bacf/4b94b761-660a-46e6-ab46-41ab70a28004/a89d2794-af66-4008-a7a6-dbba34245613.png',
-          routing_status: 'offline',
-          visibility: 'all'
-        }
-      ],
-      thread: {
-        id: 'SW48DS4UVA',
-        created_at: '2025-05-14T08:27:46.192000Z',
-        active: true,
-        properties: { routing: [Object], source: [Object] },
-        user_ids: [ '86afaacf-ae76-4864-aa38-7366dfb54e82' ],
-        events: [ [Object] ],
-        access: { group_ids: [Array] },
-        queue: {
-          position: 1,
-          wait_time: 285,
-          queued_at_us: '2025-05-14T08:27:46.193360Z'
-        },
-        previous_thread_id: 'SW48DS1J1G'
-      },
-      properties: {
-        routing: { continuous: false, pinned: false, was_pinned: false },
-        source: {
-          client_id: 'c5e4f61e1a6c3b1521b541bc5c5a2ac5',
-          customer_client_id: 'c5e4f61e1a6c3b1521b541bc5c5a2ac5'
-        }
-      },
-      access: { group_ids: [ 0 ] }
+    if(!req?.body?.payload){  
+      return res.status(400).json({
+        error:"No Lead found"
+      })
     }
+    const chat = req.body.payload.chat;
 
     let ip = chat.users[0]?.last_visit?.ip || 'IP not available';
     let useremail=chat?.users[0]?.email;
