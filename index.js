@@ -72,6 +72,8 @@ app.post('/webhook/livechat', async (req, res) => {
       })
     }
     const chat = req.body.payload.chat;
+    console.log(chat)
+    return;
     let ip = chat.users[0]?.last_visit?.ip || 'IP not available';
     const lastPages = chat.users[0]?.last_visit?.last_pages || [];
     const chatCreatedAt = new Date(chat.thread.created_at);
