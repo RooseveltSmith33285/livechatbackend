@@ -23,50 +23,6 @@ mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWri
 })
 .then(() => console.log('Connected to MongoDB Atlas'))
 .catch(err => console.log('Error connecting to MongoDB Atlas:', err));
-async function createLeadPDF(data, pageUrl) {
- 
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument();
-    const filename = `lead-${Date.now()}.pdf`;
-
-
-    const writeStream = fs.createWriteStream(filename);
-    doc.pipe(writeStream);
-
- 
-    doc.fontSize(16).text('Lead Information', { align: 'center' });
-    doc.moveDown();
-
-   
-    const leadDetails = {
-      'First Name': data?.FirstName || data?.NameFull?.split(' ')[0] || 'N/A',
-      'Last Name': data?.LastName || data?.NameFull?.split(' ')[1] || 'N/A',
-      'Email': data?.EmailAddress || data?.Email || 'N/A',
-      'Phone Number': data?.PhoneNumber || data?.Cell || 'N/A',
-      'URL': pageUrl,
-      'Lead Source': 'ENRICHIFY',
-      'Lead Quality': 'WARM'
-    };
-
-   
-    Object.entries(leadDetails).forEach(([key, value]) => {
-      doc.fontSize(12).text(`${key}: ${value}`, {
-        paragraphGap: 5,
-        indent: 5
-      });
-      doc.moveDown();
-    });
-
-    
-    doc.end();
-
-    writeStream.on('finish', () => {
-      resolve(filename);  
-    });
-
-    writeStream.on('error', reject); 
-  });
-}
 
 app.get('/totalLeads',async(req,res)=>{
   try{
