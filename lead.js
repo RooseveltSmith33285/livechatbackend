@@ -28,6 +28,14 @@ const leadSchema=mongoose.Schema({
     LeadQuality:{
         type:String,
         required:true
+    },
+    Address:{
+        type:String,
+        required:true
+    },
+    State:{
+        type:String,
+        required:true
     }
 },{
     timestamps:true
