@@ -16,7 +16,11 @@ const app = express();
 const request=require('request')
 app.use(bodyParser.json());
 app.use(cors());
-mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',{
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  family: 4
+})
 
 app.get('/totalLeads',async(req,res)=>{
   try{
