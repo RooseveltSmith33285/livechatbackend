@@ -16,13 +16,7 @@ const app = express();
 const request=require('request')
 app.use(bodyParser.json());
 app.use(cors());
-mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/your-database-name?retryWrites=true&w=majority', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 50000, 
-  keepAlive: true,
-  keepAliveInitialDelay: 300000
-})
+mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 
 app.get('/totalLeads',async(req,res)=>{
   try{
