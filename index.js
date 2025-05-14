@@ -1,10 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
+const leadsModel=require('./lead')
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Mailgun=require('mailgun.js')
+const mongoose=require('mongoose')
 const FormData=require('form-data')
+const connect=require('./connection')
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const nodemailer=require('nodemailer')
@@ -13,7 +16,7 @@ const app = express();
 const request=require('request')
 app.use(bodyParser.json());
 app.use(cors());
-
+connect
 async function createLeadPDF(data, pageUrl) {
  
   return new Promise((resolve, reject) => {
@@ -59,22 +62,80 @@ async function createLeadPDF(data, pageUrl) {
   });
 }
 
+app.get('/totalLeads',async(req,res)=>{
+  try{
+    const count = await leadsModel.countDocuments({});
+    console.log(count);
+return res.status(200).json({
+  count
+})
+  }catch(e){
+    console.error(e.message);
+    res.status(500).json({ error: "Server error while fetching leads" });
+  }
+})
 
+app.get('/leads', async (req, res) => { 
+  const { startIndex = 0, startDate, endDate } = req.query;
+
+ 
+  try {
+    const filter = {};
+    const pageSize = 10;
+
+    
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      
+     
+      if (startDate && startDate.trim()) {
+        filter.createdAt.$gte = new Date(startDate);
+      }
+   
+      if (endDate && endDate.trim()) {
+        filter.createdAt.$lte = new Date(endDate);
+      }
+    }
+
+   
+    const totalCount = await leadsModel.countDocuments(filter);
+    const leads = await leadsModel.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(Number(startIndex))
+      .limit(pageSize)
+      .lean();
+
+    const endIndex = Number(startIndex) + leads.length - 1;
+
+    return res.json({
+      data: leads,
+      totalCount,
+      currentPage: Math.floor(startIndex / pageSize) + 1,
+      totalPages: Math.ceil(totalCount / pageSize),
+      hasMore: (startIndex + pageSize) < totalCount
+    });
+
+  } catch (e) {
+    console.error(e.message);
+    res.status(500).json({ error: "Server error while fetching leads" });
+  }
+});
 
 
 app.post('/webhook/livechat', async (req, res) => {
+  const session=await mongoose.startSession()
   try {
     let data;
   
-    if(!req?.body?.payload){
+    if(!req?.body?.payload){  
       return res.status(400).json({
         error:"No Lead found"
       })
     }
     const chat = req.body.payload.chat;
-    console.log(chat)
-    return;
+
     let ip = chat.users[0]?.last_visit?.ip || 'IP not available';
+    let useremail=chat?.users[0]?.email;
     const lastPages = chat.users[0]?.last_visit?.last_pages || [];
     const chatCreatedAt = new Date(chat.thread.created_at);
 
@@ -111,26 +172,31 @@ app.post('/webhook/livechat', async (req, res) => {
     }
 
     
-  console.log(chat)
-  console.log("longest page is")
-  console.log(longestPage)
+
 
 
     const datazappResponse = await axios.post(
       'https://secureapi.datazapp.com/Appendv2',
-      {
+      { 
         ApiKey: "NKBTHXMFEJ",           
-        AppendModule: "ReverseIPAppend",
-IsMaximizedAppend:true,
-        AppendType: "2",
-        Data: [{ IP: ip }]           
+        AppendModule: "EncryptedEmailAppendAPI",
+        AppendType: 5,
+        Isb2bOnly: 0,
+        Data: [{Email:useremail }]           
       }
     );
 
 
+   
 if(datazappResponse?.data?.ResponseDetail?.Data!=null && datazappResponse?.data?.ResponseDetail?.Data[0]?.FirstName?.length>0){
  
   data=datazappResponse.data?.ResponseDetail?.Data[0];
+  data={
+    ...data,
+    URL:longestPage.url,
+    LeadQuality:'WARM',
+    LeadSource:'ENRICHIFY'
+  }
 }
 
 
@@ -160,6 +226,8 @@ const params = {
   ip: ip
 };
 
+console.log("params")
+console.log(params)
 
 const response = await axios.get(
   "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
@@ -188,15 +256,22 @@ const pdfBuffer = fs.readFileSync(pdfPath);
 const fileContent = fs.readFileSync(pdfPath);
 
 
-await sendEmailWithAttachment(fileContent,data,"chatgpt.com");
+session.startTransaction();
+await sendEmailWithAttachment(fileContent,data,longestPage.url);
+await leadsModel.create(data);
 
+await session.commitTransaction();
   fs.unlinkSync(pdfPath);
+  await session.endSession();
+  return res.status(200).json({
+    message:"Sucessfully"
+  })
 }
-return res.status(200).json({
-  message:"Sucessfully"
-})
+
 
   } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
     console.error(err.message);
     res.status(500).json({ error: 'Error processing lead.' });
   }
