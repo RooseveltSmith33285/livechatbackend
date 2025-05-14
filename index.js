@@ -220,6 +220,8 @@ if(data){
 
 
 await sendEmailWithAttachment('',data,longestPage.url);
+console.log("DATA TO BE INSERTED INTO MODEL")
+console.log(data)
 await leadsModel.create(data);
 
 
