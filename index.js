@@ -19,6 +19,7 @@ app.use(cors());
 mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000,
 })
 .then(() => console.log('Connected to MongoDB Atlas'))
 .catch(err => console.log('Error connecting to MongoDB Atlas:', err));
