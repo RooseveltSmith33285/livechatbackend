@@ -351,7 +351,7 @@ await sendEmailWithAttachment('',data,longestPage.url);
 await leadsModel.create(data);
 
 
-  fs.unlinkSync(pdfPath);
+  
  
   return res.status(200).json({
     message:"Sucessfully"
