@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const leadsModel=require('./lead')
+const { upload, parseCSV } = require('./fileUpload');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Mailgun=require('mailgun.js')
@@ -21,6 +22,122 @@ mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWri
   socketTimeoutMS: 45000,
   family: 4
 })
+
+
+
+const sendBulkEmail = async (enrichedData, errors) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user:'leads@enrichifydata.com', 
+      pass: 'cazhzgbslrzvyjfc' 
+    }
+  });
+
+  const mailOptions = {
+    from: '"Lead System" <shipmate2134@gmail.com>',
+    to: 'InternetLeads@FlatOutMotorcycles.com',
+    subject: 'Enrichify Lead System',
+    html: generateEmailHTML(enrichedData),
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+const generateEmailHTML = (data) => {
+  return `
+    <html>
+      <head>
+        <style>
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+        </style>
+      </head>
+      <body>
+        <h2>Enriched Lead Report (${new Date().toLocaleDateString()})</h2>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Website</th>
+            <th>Lead Quality</th>
+          </tr>
+          ${data.map(user => `
+            <tr>
+              <td>${user.FirstName} ${user.LastName}</td>
+              <td>${user.Email}</td>
+              <td>${user.Phone}</td>
+              <td>${user.Address}, ${user.City}, ${user.State}</td>
+              <td><a href="${user.URL}">${user.URL}</a></td>
+              <td>${user.LeadQuality}</td>
+            </tr>
+          `).join('')}
+        </table>
+      </body>
+    </html>
+  `;
+};
+
+
+const processCSV = async (csvUsers) => {
+  const enrichedData = [];
+  const errors = [];
+
+  for (const [index, user] of csvUsers.entries()) {
+    try {
+      
+      const datazappResponse = await axios.post(
+        'https://secureapi.datazapp.com/Appendv2',
+        {
+          ApiKey: "NKBTHXMFEJ",
+          AppendModule: "EncryptedEmailAppendAPI",
+          AppendType: 5,
+          Isb2bOnly: 0,
+          Data: [{ Email: user.Enrichify_Email }]
+        }
+      );
+
+     if(!datazappResponse.data?.ResponseDetail?.Data?.[0]?.FirstName){
+      continue;
+     }
+      const params = {  };
+      const melissaResponse = await axios.get(
+        "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
+        { params }
+      );
+
+  
+     let combinedData = {
+        ...datazappResponse.data?.ResponseDetail?.Data?.[0],
+        ...melissaResponse.data?.Records?.[0],
+        URL: user['Web Page'],
+        LeadQuality: 'WARM',
+        LeadSource: 'ENRICHIFY'
+      };
+
+      if(!combinedData?.Phone){
+combinedData={
+  ...combinedData,
+  Phone:'N/A'
+}
+      }
+
+      enrichedData.push(combinedData);
+    } catch (error) {
+      errors.push({
+        user: user.Enrichify_Email,
+        error: error.message
+      });
+      console.error(`Error processing ${user.Enrichify_Email}:`, error);
+    }
+  }
+
+  return { enrichedData, errors };
+};
+
 
 app.get('/totalLeads',async(req,res)=>{
   try{
@@ -311,20 +428,50 @@ async function sendEmailWithAttachment(fileContent,data,pageUrl) {
 
 
 // (async()=>{
-//   let address="288 East 175th St."
-//   const apiKey = 'AIzaSyAGDj6y_kK-bnqC41stB0qo4cNII1opfXs'; 
-//   const response = await axios.get(
-//     `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
-//   );
+  // let address="288 East 175th St."
+  // const apiKey = 'AIzaSyAGDj6y_kK-bnqC41stB0qo4cNII1opfXs'; 
+  // const response = await axios.get(
+  //   `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
+  // );
  
   
-//   const { lat, lng } = response.data.results[0].geometry.location;
-//   console.log(JSON.stringify(response.data))
-//   console.log(lat)
-//   console.log(lng)
+  // const { lat, lng } = response.data.results[0].geometry.location;
+  // console.log(JSON.stringify(response.data))
+  // console.log(lat)
+  // console.log(lng)
 // })()
 
 
+
+app.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
+ 
+  try {
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No file uploaded' });
+    }
+
+   
+   
+    const csvUsers = await parseCSV(req.file.buffer);
+  
+    const { enrichedData, errors } = await processCSV(csvUsers);
+    
+   
+    await sendBulkEmail(enrichedData, errors);
+    await leadsModel.insertMany(enrichedData);
+    res.status(200).json({
+      success: true,
+      processed: enrichedData.length,
+      errors: errors.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
 
 app.listen(5000, () => {
