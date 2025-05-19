@@ -8,7 +8,6 @@ const cors = require('cors');
 const Mailgun=require('mailgun.js')
 const mongoose=require('mongoose')
 const FormData=require('form-data')
-let chatGPTKEY="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"
 
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
@@ -249,33 +248,6 @@ app.post('/webhook/livechat', async (req, res) => {
       }
     }
 
-    const prompt = `Give me one concise keyword that best describes the following URL:\n${longestPage.url}`;
-    const gptdata = {
-      model: 'gpt-3.5-turbo',
-      store: true,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-    };
-  
-    const gptresponse = await axios.post('https://api.openai.com/v1/chat/completions', gptdata, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${chatGPTKEY}`,
-      },
-    });
-
-
-  
-    
-    const keyword = gptresponse?.data?.choices?.[0]?.message?.content?.trim();
-
-    if(keyword){
-      longestPage.url=keyword
-    }
 
 
     const datazappResponse = await axios.post(
