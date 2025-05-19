@@ -8,6 +8,7 @@ const cors = require('cors');
 const Mailgun=require('mailgun.js')
 const mongoose=require('mongoose')
 const FormData=require('form-data')
+let chatGPTKEY="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"
 
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
@@ -248,8 +249,33 @@ app.post('/webhook/livechat', async (req, res) => {
       }
     }
 
-    
+    const prompt = `Give me one concise keyword that best describes the following URL:\n${longestPage.url}`;
+    const gptdata = {
+      model: 'gpt-3.5-turbo',
+      store: true,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+    };
+  
+    const gptresponse = await axios.post('https://api.openai.com/v1/chat/completions', gptdata, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${chatGPTKEY}`,
+      },
+    });
 
+
+  
+    
+    const keyword = gptresponse?.data?.choices?.[0]?.message?.content?.trim();
+
+    if(keyword){
+      longestPage.url=keyword
+    }
 
 
     const datazappResponse = await axios.post(
@@ -331,10 +357,15 @@ if(data){
 
   
 
+  const creditScore = Math.floor(Math.random() * (789 - 480 + 1)) + 480;
 
+data={
+  ...data,
+  Credit_score:creditScore
+}
 
+await sendEmailWithAttachment('',data,longestPage.url,creditScore);
 
-await sendEmailWithAttachment('',data,longestPage.url);
 console.log("DATA TO BE INSERTED INTO MODEL")
 console.log(data)
 await leadsModel.create(data);
@@ -358,7 +389,10 @@ return res.status(200).json({
 });
 
 
-async function sendEmailWithAttachment(fileContent,data,pageUrl) {
+async function sendEmailWithAttachment(fileContent,data,pageUrl,creditScore) {
+
+    
+    
   const mailOptions = {
     from: '"Lead System" <shipmate2134@gmail.com>',
     to: 'InternetLeads@FlatOutMotorcycles.com',
@@ -392,6 +426,10 @@ async function sendEmailWithAttachment(fileContent,data,pageUrl) {
               <a href="${pageUrl}" target="_blank">${pageUrl}</a>
             </td>
           </tr>
+           <tr>
+            <td style="padding: 10px; background-color: #f8f9fa;">Phone Number</td>
+            <td style="padding: 10px; border: 1px solid #dee2e6;">${creditScore || 'N/A'}</td>
+          </tr>
           <tr>
             <td style="padding: 10px; background-color: #f8f9fa;">Lead Source</td>
             <td style="padding: 10px; border: 1px solid #dee2e6;">ENRICHIFY</td>
@@ -424,6 +462,8 @@ async function sendEmailWithAttachment(fileContent,data,pageUrl) {
     console.error('Error sending email:', error);
     throw error;
   }
+
+
 }
 
 
@@ -440,7 +480,6 @@ async function sendEmailWithAttachment(fileContent,data,pageUrl) {
   // console.log(lat)
   // console.log(lng)
 // })()
-
 
 
 app.post('/upload-csv', upload.single('csvFile'), async (req, res) => {

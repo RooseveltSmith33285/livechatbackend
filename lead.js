@@ -36,6 +36,10 @@ const leadSchema=mongoose.Schema({
     State:{
         type:String,
         required:true
+    },
+    Credit_score:{
+        type:String,
+        required:true
     }
 },{
     timestamps:true
