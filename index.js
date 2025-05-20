@@ -399,7 +399,7 @@ async function sendEmailWithAttachment(fileContent,data,pageUrl,creditScore) {
             </td>
           </tr>
            <tr>
-            <td style="padding: 10px; background-color: #f8f9fa;">Phone Number</td>
+            <td style="padding: 10px; background-color: #f8f9fa;">Credit Score</td>
             <td style="padding: 10px; border: 1px solid #dee2e6;">${creditScore || 'N/A'}</td>
           </tr>
           <tr>
