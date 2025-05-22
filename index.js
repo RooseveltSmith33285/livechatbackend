@@ -249,7 +249,8 @@ app.post('/webhook/livechat', async (req, res) => {
     }
 
 
-
+console.log('longestPage')
+console.log(longestPage.url)
     const datazappResponse = await axios.post(
       'https://secureapi.datazapp.com/Appendv2',
       { 
