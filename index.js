@@ -279,8 +279,15 @@ if(datazappResponse?.data?.ResponseDetail?.Data!=null && datazappResponse?.data?
 
 
 
-let firstName=datazappResponse.data.ResponseDetail.Data[0]?.FirstName?datazappResponse.data.ResponseDetail.Data[0]?.FirstName:chat?.users[0]?.name?.split(' ')[0]
-let lastName=datazappResponse.data.ResponseDetail.Data[0]?.LastName?datazappResponse.data.ResponseDetail.Data[0]?.LastName:chat?.users[0]?.name?.split(' ')?.length>0?chat?.users[0]?.name?.split(' ')[1]:'N/A'
+let firstName = datazappResponse.data.ResponseDetail.Data[0]?.FirstName 
+    ? datazappResponse.data.ResponseDetail.Data[0]?.FirstName 
+    : chat?.users[0]?.name?.split(' ')[0]
+
+let lastName = datazappResponse.data.ResponseDetail.Data[0]?.LastName 
+    ? datazappResponse.data.ResponseDetail.Data[0]?.LastName 
+    : (chat?.users[0]?.name?.split(' ')?.length > 1 
+        ? chat?.users[0]?.name?.split(' ')[1] 
+        : 'N/A')
 let address=datazappResponse.data.ResponseDetail.Data[0]?.Address?datazappResponse.data.ResponseDetail.Data[0]?.Address:'N/A'
 let email=datazappResponse.data.ResponseDetail.Data[0]?.Email?datazappResponse.data.ResponseDetail.Data[0]?.Email:useremail
 let phone=datazappResponse.data.ResponseDetail.Data[0]?.Phone?datazappResponse.data.ResponseDetail.Data[0]?.Phone:'N/A'
