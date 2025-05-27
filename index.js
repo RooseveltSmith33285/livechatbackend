@@ -211,7 +211,7 @@ app.post('/webhook/livechat', async (req, res) => {
     }
     const chat = req.body.payload.chat;
 console.log("WHOLE CHAT")
-console.log(chat)
+console.log(chat?.users[0]?.statistics)
 console.log(JSON.stringify(chat))
     let ip = chat.users[0]?.last_visit?.ip || 'IP not available';
     let useremail=chat?.users[0]?.email;
@@ -279,13 +279,14 @@ if(datazappResponse?.data?.ResponseDetail?.Data!=null && datazappResponse?.data?
   }
 }
 
+return;
 
 
-let firstName=datazappResponse.data.ResponseDetail.Data[0]?.FirstName
-let lastName=datazappResponse.data.ResponseDetail.Data[0]?.LastName
-let address=datazappResponse.data.ResponseDetail.Data[0]?.Address
-let email=datazappResponse.data.ResponseDetail.Data[0]?.Email
-let phone=datazappResponse.data.ResponseDetail.Data[0]?.Phone
+let firstName=datazappResponse.data.ResponseDetail.Data[0]?.FirstName?datazappResponse.data.ResponseDetail.Data[0]?.FirstName:chat?.users[0]?.name?.split(' ')[0]
+let lastName=datazappResponse.data.ResponseDetail.Data[0]?.LastName?datazappResponse.data.ResponseDetail.Data[0]?.LastName:chat?.users[0]?.name?.split(' ')?.length>0?chat?.users[0]?.name?.split(' ')[1]:'N/A'
+let address=datazappResponse.data.ResponseDetail.Data[0]?.Address?datazappResponse.data.ResponseDetail.Data[0]?.Address:'N/A'
+let email=datazappResponse.data.ResponseDetail.Data[0]?.Email?datazappResponse.data.ResponseDetail.Data[0]?.Email:useremail
+let phone=datazappResponse.data.ResponseDetail.Data[0]?.Phone?datazappResponse.data.ResponseDetail.Data[0]?.Phone:'N/A'
 let city=datazappResponse.data.ResponseDetail.Data[0]?.City
 let state=datazappResponse.data.ResponseDetail.Data[0]?.State
 
