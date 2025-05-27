@@ -339,6 +339,27 @@ console.log("melisa data")
   console.log("datazapp data")
   console.log(datazappResponse?.data?.ResponseDetail?.Data)
 
+  if(!data){
+    data={
+      ...data,
+      URL:longestPage.url,
+      LeadQuality:'WARM',
+      LeadSource:'ENRICHIFY',
+      firstName:firstName,
+      lastName,
+      address,
+      city,
+      state,
+      email,
+      phone,
+      City:city,
+      State:state,
+      Email:email,
+      Phone:phone,
+      FirstName:firstName,
+      LastName:lastName
+    }
+  }
 
 if(data){
 
