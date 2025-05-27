@@ -210,7 +210,9 @@ app.post('/webhook/livechat', async (req, res) => {
       })
     }
     const chat = req.body.payload.chat;
-
+console.log("WHOLE CHAT")
+console.log(chat)
+console.log(JSON.stringify(chat))
     let ip = chat.users[0]?.last_visit?.ip || 'IP not available';
     let useremail=chat?.users[0]?.email;
     const lastPages = chat.users[0]?.last_visit?.last_pages || [];
