@@ -210,9 +210,7 @@ app.post('/webhook/livechat', async (req, res) => {
       })
     }
     const chat = req.body.payload.chat;
-console.log("WHOLE CHAT")
-console.log(chat?.users[0]?.statistics)
-console.log(JSON.stringify(chat))
+
     let ip = chat.users[0]?.last_visit?.ip || 'IP not available';
     let useremail=chat?.users[0]?.email;
     const lastPages = chat.users[0]?.last_visit?.last_pages || [];
@@ -279,7 +277,6 @@ if(datazappResponse?.data?.ResponseDetail?.Data!=null && datazappResponse?.data?
   }
 }
 
-return;
 
 
 let firstName=datazappResponse.data.ResponseDetail.Data[0]?.FirstName?datazappResponse.data.ResponseDetail.Data[0]?.FirstName:chat?.users[0]?.name?.split(' ')[0]
@@ -287,8 +284,16 @@ let lastName=datazappResponse.data.ResponseDetail.Data[0]?.LastName?datazappResp
 let address=datazappResponse.data.ResponseDetail.Data[0]?.Address?datazappResponse.data.ResponseDetail.Data[0]?.Address:'N/A'
 let email=datazappResponse.data.ResponseDetail.Data[0]?.Email?datazappResponse.data.ResponseDetail.Data[0]?.Email:useremail
 let phone=datazappResponse.data.ResponseDetail.Data[0]?.Phone?datazappResponse.data.ResponseDetail.Data[0]?.Phone:'N/A'
-let city=datazappResponse.data.ResponseDetail.Data[0]?.City
-let state=datazappResponse.data.ResponseDetail.Data[0]?.State
+let city=datazappResponse.data.ResponseDetail.Data[0]?.City?datazappResponse.data.ResponseDetail.Data[0]?.City:chat?.users[0]?.last_visit?.geolocation?.city
+let state=datazappResponse.data.ResponseDetail.Data[0]?.State?datazappResponse.data.ResponseDetail.Data[0]?.State:chat?.users[0]?.last_visit?.geolocation?.region
+console.log("Data")
+console.log(city)
+console.log(state)
+console.log(phone)
+console.log(email)
+console.log(address)
+console.log(lastName)
+console.log(firstName)
 
 
 const params = {
@@ -307,8 +312,6 @@ const params = {
   ip: ip
 };
 
-console.log("params")
-console.log(params)
 
 const response = await axios.get(
   "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
