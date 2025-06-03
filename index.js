@@ -4,6 +4,7 @@ const axios = require('axios');
 const leadsModel=require('./lead')
 const { upload, parseCSV } = require('./fileUpload');
 const bodyParser = require('body-parser');
+const cron=require('node-cron')
 const cors = require('cors');
 const Mailgun=require('mailgun.js')
 const mongoose=require('mongoose')
@@ -14,7 +15,8 @@ const fs = require('fs');
 const nodemailer=require('nodemailer')
 
 const app = express();
-const request=require('request')
+const request=require('request');
+const enrichedFileModel = require('./fileData');
 app.use(bodyParser.json());
 app.use(cors());
 mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',{
@@ -23,72 +25,19 @@ mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWri
   family: 4
 })
 
-
-
-const sendBulkEmail = async (enrichedData, errors) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user:'leads@enrichifydata.com', 
-      pass: 'cazhzgbslrzvyjfc' 
-    }
-  });
-
-  const mailOptions = {
-    from: '"Lead System" <shipmate2134@gmail.com>',
-    to: 'InternetLeads@FlatOutMotorcycles.com',
-    subject: 'Enrichify Lead System',
-    html: generateEmailHTML(enrichedData),
-  };
-
-  await transporter.sendMail(mailOptions);
-};
-
-const generateEmailHTML = (data) => {
-  return `
-    <html>
-      <head>
-        <style>
-          table { border-collapse: collapse; width: 100%; }
-          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-          th { background-color: #f2f2f2; }
-        </style>
-      </head>
-      <body>
-        <h2>Enriched Lead Report (${new Date().toLocaleDateString()})</h2>
-        <table>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>Website</th>
-            <th>Lead Quality</th>
-          </tr>
-          ${data.map(user => `
-            <tr>
-              <td>${user.FirstName} ${user.LastName}</td>
-              <td>${user.Email}</td>
-              <td>${user.Phone}</td>
-              <td>${user.Address}, ${user.City}, ${user.State}</td>
-              <td><a href="${user.URL}">${user.URL}</a></td>
-              <td>${user.LeadQuality}</td>
-            </tr>
-          `).join('')}
-        </table>
-      </body>
-    </html>
-  `;
-};
+// mongoose.connect('mongodb://127.0.0.1/livechatleads',{
+//   serverSelectionTimeoutMS: 5000,
+//   socketTimeoutMS: 45000,
+//   family: 4
+// })
 
 
 const processCSV = async (csvUsers) => {
   const enrichedData = [];
   const errors = [];
-
+  
   for (const [index, user] of csvUsers.entries()) {
     try {
-      
       const datazappResponse = await axios.post(
         'https://secureapi.datazapp.com/Appendv2',
         {
@@ -100,32 +49,84 @@ const processCSV = async (csvUsers) => {
         }
       );
 
-     if(!datazappResponse.data?.ResponseDetail?.Data?.[0]?.FirstName){
-      continue;
-     }
-      const params = {  };
-      const melissaResponse = await axios.get(
+      let data = datazappResponse.data?.ResponseDetail?.Data[0] || {};
+      
+      // Set default values
+      let firstName = data?.FastName || user?.Enrichify_First;
+      let lastName = data?.LastName || (user.Enrichify_Last?.length > 1 ? user.Enrichify_Last : 'N/A');
+      let address = data?.Address || user.Enrichify_Address || 'N/A';
+      let email = data?.Email || user.Enrichify_Email || '';
+      let phone = data?.Phone || user.Cell || user?.Landline || 'N/A';
+      let city = data?.City || user.Enrichify_City || '';
+      let state = data?.State || user.Enrichify_State || 'N/A';
+      const creditScore = user.Model_Credit
+
+      const params = {
+        format: "json",
+        id: "DvHdwMzHAPvQ4quyNYq8a4**", 
+        act: "Append,Check,Verify,Move",
+        cols: "AddressLine1,City,State,PostalCode,EmailAddress,TopLevelDomain",
+        first: firstName,
+        last: lastName,
+        full: firstName + ' ' + lastName,
+        a1: address,
+        city: city,
+        state: state,
+        email: email,
+        phone: phone,
+      };
+
+      const response = await axios.get(
         "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
         { params }
       );
 
-  
-     let combinedData = {
-        ...datazappResponse.data?.ResponseDetail?.Data?.[0],
-        ...melissaResponse.data?.Records?.[0],
-        URL: user['Web Page'],
-        LeadQuality: 'WARM',
-        LeadSource: 'ENRICHIFY'
-      };
-
-      if(!combinedData?.Phone){
-combinedData={
-  ...combinedData,
-  Phone:'N/A'
-}
+     
+      if (response.data.Records[0]?.City?.trim()?.length > 0) {
+        data = {
+          ...data,
+          ...response.data.Records[0],
+          FirstName: response.data.Records[0].FirstName || firstName,
+          LastName: response.data.Records[0].LastName || lastName,
+          Email: response.data.Records[0].EmailAddress || email,
+          Phone: response.data.Records[0].PhoneNumber || phone,
+          Address: response.data.Records[0].AddressLine1 || address,
+          City: response.data.Records[0].City || city,
+          State: response.data.Records[0].State || state,
+          creditScore,
+          Credit_score:creditScore
+        };
+      } else {
+        data = {
+          ...data,
+          FirstName: firstName,
+          LastName: lastName,
+          Email: email,
+          Address: address,
+          City: city,
+          State: state,
+          Phone:phone,
+          creditScore,
+          Credit_score:creditScore
+        };
       }
 
-      enrichedData.push(combinedData);
+      
+      data = {
+        ...data,
+        URL: user.Web_Page || '',
+        LeadQuality: 'WARM',
+        LeadSource: 'ENRICHIFY',
+        creditScore,
+        Credit_score:creditScore
+      };
+    
+      enrichedData.push(data);
+      
+      await enrichedFileModel.findByIdAndUpdate(user._id, {
+        $set: { enriched: true }
+      });
+      
     } catch (error) {
       errors.push({
         user: user.Enrichify_Email,
@@ -294,6 +295,8 @@ let email=datazappResponse.data.ResponseDetail.Data[0]?.Email?datazappResponse.d
 let phone=datazappResponse.data.ResponseDetail.Data[0]?.Phone?datazappResponse.data.ResponseDetail.Data[0]?.Phone:'N/A'
 let city=datazappResponse.data.ResponseDetail.Data[0]?.City?datazappResponse.data.ResponseDetail.Data[0]?.City:chat?.users[0]?.last_visit?.geolocation?.city
 let state=datazappResponse.data.ResponseDetail.Data[0]?.State?datazappResponse.data.ResponseDetail.Data[0]?.State:chat?.users[0]?.last_visit?.geolocation?.region
+
+
 console.log("Data")
 console.log(city)
 console.log(state)
@@ -319,6 +322,7 @@ const params = {
   phone: phone,
   ip: ip
 };
+
 
 
 const response = await axios.get(
@@ -399,7 +403,9 @@ return res.status(200).json({
 
 
 async function sendEmailWithAttachment(fileContent,data,pageUrl,creditScore) {
-
+if(!creditScore){
+  creditScore = Math.floor(Math.random() * (789 - 480 + 1)) + 480;
+}
     
     
   const mailOptions = {
@@ -500,27 +506,71 @@ app.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
     }
 
    
-   
     const csvUsers = await parseCSV(req.file.buffer);
-  
-    const { enrichedData, errors } = await processCSV(csvUsers);
+
+    let modifiedCsvUsers = csvUsers.map((val, i) => {
+      // Trim all keys
+      let trimmedVal = {};
+      Object.keys(val).forEach(key => {
+        trimmedVal[key.trim()] = val[key];
+      });
     
-   
-    await sendBulkEmail(enrichedData, errors);
-    await leadsModel.insertMany(enrichedData);
-    res.status(200).json({
-      success: true,
-      processed: enrichedData.length,
-      errors: errors.length
+      return {
+        ...trimmedVal,
+        Google_Search_Keyword: trimmedVal['Google Search Keyword'],
+        Web_Page: trimmedVal['Web Page'],
+        Lead_Quality: trimmedVal['Lead Quality'] !== undefined ? trimmedVal['Lead Quality'] : undefined,
+        Model_Credit: trimmedVal['Model Credit'] !== undefined ? trimmedVal['Model Credit'] : undefined,
+        Income_Range: trimmedVal['Income Range'] !== undefined ? trimmedVal['Income Range'] : undefined,
+        Enrichify_Email:trimmedVal['Enrichify_Email']
+      };
     });
+    
+ 
+    await enrichedFileModel.create(modifiedCsvUsers)
+
+
+    return res.status(200).json({
+      message:"Sucessfully updated"
+    })
   } catch (error) {
-    res.status(500).json({
+    console.log(error.message)
+   return res.status(500).json({
       success: false,
       error: error.message
     });
   }
 });
 
+const enrichFile = async (csvUsers) => {
+let {enrichedData, errors }=await processCSV(csvUsers);
+
+  // Process each enriched record to match leadsModel schema
+ 
+  // Send email for each lead (if needed)
+
+ 
+  for (const data of enrichedData) {
+   
+    await sendEmailWithAttachment('', data, data.URL, data.creditScore);
+  }
+
+ 
+  // Insert the properly formatted leads
+  await leadsModel.insertMany(enrichedData);
+};
+
+
+
+cron.schedule('0 */4 * * *', async () => {
+ try{
+  let batchUsers=await enrichedFileModel.find({enriched:false}).limit(10)
+
+  enrichFile(batchUsers)
+ }catch(e){
+  console.log(e.message)
+ }
+});
 
 app.listen(5000, () => {
   console.log('API server running on port 5000'); 
