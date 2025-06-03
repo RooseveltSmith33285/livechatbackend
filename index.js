@@ -38,65 +38,19 @@ const processCSV = async (csvUsers) => {
   
   for (const [index, user] of csvUsers.entries()) {
     try {
-      const datazappResponse = await axios.post(
-        'https://secureapi.datazapp.com/Appendv2',
-        {
-          ApiKey: "NKBTHXMFEJ",
-          AppendModule: "EncryptedEmailAppendAPI",
-          AppendType: 5,
-          Isb2bOnly: 0,
-          Data: [{ Email: user.Enrichify_Email }]
-        }
-      );
-
-      let data = datazappResponse.data?.ResponseDetail?.Data[0] || {};
+     let data;
       
-      // Set default values
-      let firstName = data?.FastName || user?.Enrichify_First;
-      let lastName = data?.LastName || (user.Enrichify_Last?.length > 1 ? user.Enrichify_Last : 'N/A');
-      let address = data?.Address || user.Enrichify_Address || 'N/A';
-      let email = data?.Email || user.Enrichify_Email || '';
-      let phone = data?.Phone || user.Cell || user?.Landline || 'N/A';
-      let city = data?.City || user.Enrichify_City || '';
-      let state = data?.State || user.Enrichify_State || 'N/A';
+     
+      let firstName = user?.Enrichify_First;
+      let lastName = (user.Enrichify_Last?.length > 1 ? user.Enrichify_Last : 'N/A');
+      let address =  user.Enrichify_Address || 'N/A';
+      let email = user.Enrichify_Email || '';
+      let phone =  user.Cell || user?.Landline || 'N/A';
+      let city =  user.Enrichify_City || '';
+      let state = user.Enrichify_State || 'N/A';
       const creditScore = user.Model_Credit
 
-      const params = {
-        format: "json",
-        id: "DvHdwMzHAPvQ4quyNYq8a4**", 
-        act: "Append,Check,Verify,Move",
-        cols: "AddressLine1,City,State,PostalCode,EmailAddress,TopLevelDomain",
-        first: firstName,
-        last: lastName,
-        full: firstName + ' ' + lastName,
-        a1: address,
-        city: city,
-        state: state,
-        email: email,
-        phone: phone,
-      };
-
-      const response = await axios.get(
-        "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
-        { params }
-      );
-
-     
-      if (response.data.Records[0]?.City?.trim()?.length > 0) {
-        data = {
-          ...data,
-          ...response.data.Records[0],
-          FirstName: response.data.Records[0].FirstName || firstName,
-          LastName: response.data.Records[0].LastName || lastName,
-          Email: response.data.Records[0].EmailAddress || email,
-          Phone: response.data.Records[0].PhoneNumber || phone,
-          Address: response.data.Records[0].AddressLine1 || address,
-          City: response.data.Records[0].City || city,
-          State: response.data.Records[0].State || state,
-          creditScore,
-          Credit_score:creditScore
-        };
-      } else {
+      
         data = {
           ...data,
           FirstName: firstName,
@@ -107,19 +61,15 @@ const processCSV = async (csvUsers) => {
           State: state,
           Phone:phone,
           creditScore,
-          Credit_score:creditScore
+          Credit_score:creditScore,
+          URL: user.Web_Page || '',
+          LeadQuality: 'WARM',
+          LeadSource: 'ENRICHIFY',
         };
-      }
+      
 
       
-      data = {
-        ...data,
-        URL: user.Web_Page || '',
-        LeadQuality: 'WARM',
-        LeadSource: 'ENRICHIFY',
-        creditScore,
-        Credit_score:creditScore
-      };
+   
     
       enrichedData.push(data);
       
@@ -509,7 +459,7 @@ app.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
     const csvUsers = await parseCSV(req.file.buffer);
 
     let modifiedCsvUsers = csvUsers.map((val, i) => {
-      // Trim all keys
+      
       let trimmedVal = {};
       Object.keys(val).forEach(key => {
         trimmedVal[key.trim()] = val[key];
@@ -545,9 +495,6 @@ app.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
 const enrichFile = async (csvUsers) => {
 let {enrichedData, errors }=await processCSV(csvUsers);
 
-  // Process each enriched record to match leadsModel schema
- 
-  // Send email for each lead (if needed)
 
  
   for (const data of enrichedData) {
@@ -556,16 +503,14 @@ let {enrichedData, errors }=await processCSV(csvUsers);
   }
 
  
-  // Insert the properly formatted leads
   await leadsModel.insertMany(enrichedData);
 };
 
 
 
-cron.schedule('0 */4 * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
  try{
-  let batchUsers=await enrichedFileModel.find({enriched:false}).limit(10)
-
+  let batchUsers=await enrichedFileModel.find({enriched:false}).limit(5)
   enrichFile(batchUsers)
  }catch(e){
   console.log(e.message)
