@@ -781,16 +781,17 @@ app.post('/reuploadfile',upload.single('csvFile'),async(req,res)=>{
     }
 
     const csvUsers = await parseCSV(req.file.buffer);
-
-await newleadsModel.insertMany(csvUsers);
+    let newCSVUsers=csvUsers.filter(u=>u?.FirstName?.lengt!=0 && u?.LastName?.length!=0 && u?.Address?.length!=0)
+console.log(newCSVUsers)
+await newleadsModel.insertMany(newCSVUsers);
 return res.status(200).json({
   message:"successfully captured leads"
 })
   }catch(e){
-    console.log(error.message)
+    console.log(e)
     return res.status(500).json({
        success: false,
-       error: error.message
+       error: e.message
      });
   }
 })

@@ -34,11 +34,11 @@ const leadsSchema = mongoose.Schema({
     },
     Address: {
         type: String,
-        required: true
+       
     },
     State: {
         type: String,
-        required: true
+   
     },
     creditScore: {
         type: String,
