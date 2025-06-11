@@ -15,11 +15,18 @@ const leadSchema=mongoose.Schema({
     },
     Phone:{
         type:String,
-        required:true
     },
     URL:{
         type:String,
-        required:true
+       
+    },
+    entry_url:{
+        type:String,
+        required:false
+    },
+    exit_url:{
+        type:String,
+        required:false
     },
     LeadSource:{
         type:String,

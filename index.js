@@ -2,10 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const leadsModel=require('./lead')
+const newleadsModel=require('./leads')
 const { upload, parseCSV } = require('./fileUpload');
 const bodyParser = require('body-parser');
 const cron=require('node-cron')
+const { sha1 }=require('js-sha1');
 const cors = require('cors');
+const multer=require('multer')
 const Mailgun=require('mailgun.js')
 const mongoose=require('mongoose')
 const FormData=require('form-data')
@@ -19,7 +22,13 @@ const request=require('request');
 const enrichedFileModel = require('./fileData');
 app.use(bodyParser.json());
 app.use(cors());
-mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',{
+// mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',{
+//   serverSelectionTimeoutMS: 5000,
+//   socketTimeoutMS: 45000,
+//   family: 4
+// })
+
+mongoose.connect('mongodb://127.0.0.1/livechatleadsnew',{
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
   family: 4
@@ -149,6 +158,209 @@ app.get('/leads', async (req, res) => {
   }
 });
 
+app.get('/newupdate',async(req,res)=>{
+  try{
+  
+    const timestamp = Math.floor(Date.now() / 1000);
+  const username = 'shipmate2019';
+  const password = 'Bluefish1923@';
+  const projectId = '13129358';
+  
+  const queryString = `?vn=3&s=summary&s=visitor&f=json&pi=${projectId}&g=daily&t=${timestamp}&u=${username}`;
+  
+  const sha1String = queryString + password;
+
+  const sha1Hash = sha1(sha1String);
+
+  let response = await axios.get(`https://api.statcounter.com/stats/${queryString}&sha1=${sha1Hash}`);
+
+  let exampleData=[  {
+      log_visits: '4',
+      entries_in_visit: '22',
+      entry_t: '2025-06-09 15:15:46',
+      entry_url: 'https://www.flatoutmotorcycles.com/new-models/can-am-atv-outlander-2125194044506333123706978',
+      entry_title: 'New Can-Am Outlander Models For Sale in Indianapolis, IN Flat Out Motorsports Indianapolis, IN (317) 890-9110', 
+      se_keywords: '***Encrypted Search***',
+      link: 'https://www.google.com/',
+      country_name: 'United States',
+      state: 'Illinois',
+      res: '375x812',
+      exit_t: '2025-06-09 15:19:47',
+      exit_url: 'https://www.flatoutmotorcycles.com/new-models/2025-can-am-outlander-xt-850-29211390b',
+      exit_title: 'New Models Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+      returning_count: '3',
+      session_num: '4',
+      browser_name: 'iPhone',
+      browser_version: '0',
+      os: 'iOS',
+      width: '375',
+      height: '812',
+      javascript: '1',
+      country: 'US',
+      city: 'Chicago',
+      isp: 'iCloud Private Relay',
+      ip_address: '104.28.104.17',
+      ip_label: '',
+      visitor_uuid: '91CD45B530AE4432A08327ABE682BE69',
+      latitude: '41.8835',
+      longitude: '-87.6305',
+      num_entry: '57',
+      visit_length: '4 mins 1 sec'
+    },
+    {
+      log_visits: '1',
+      entries_in_visit: '6',
+      entry_t: '2025-06-09 15:16:25',
+      entry_url: 'https://www.flatoutmotorcycles.com/itemgroup/can-am-maverick-23',
+      entry_title: 'Featured Vehicles Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+      se_keywords: '***Encrypted Search***',
+      link: 'https://www.google.com/',
+      country_name: 'United States',
+      state: 'Illinois',
+      res: '430x932',
+      exit_t: '2025-06-09 15:18:33',
+      exit_url: 'https://www.flatoutmotorcycles.com/inventory/2024-can-am-maverick-x3-xds-turbo-rr-indianapolis-in-46256-12491434i',      exit_title: 'Inventory Unit Detail Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+      returning_count: '0',
+      session_num: '1',
+      browser_name: 'iPhone',
+      browser_version: '0',
+      os: 'iOS',
+      width: '430',
+      height: '932',
+      javascript: '1',
+      country: 'US',
+      city: 'Palatine',
+      isp: 'Verizon Wireless',
+      ip_address: '174.200.180.2',
+      ip_label: '',
+      visitor_uuid: 'C3216BD1E9994E2CBFB88EBA0A5A4B32',
+      latitude: '42.1112',
+      longitude: '-88.0439',
+      num_entry: '6',
+      visit_length: '2 mins 8 secs'
+    },
+    {
+      log_visits: '1',
+      entries_in_visit: '6',
+      entry_t: '2025-06-09 15:17:05',
+      entry_url: 'https://www.flatoutmotorcycles.com/search/inventory/type/PWC',
+      entry_title: 'PWC Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+      se_keywords: '',
+      link: 'https://www.flatoutmotorcycles.com/?utm_source=google&utm_medium=organic&utm_campaign=GMB-service',
+      country_name: 'United States',
+      state: 'Indiana',
+      res: '402x874',
+      exit_t: '2025-06-09 15:17:37',
+      exit_url: 'https://www.flatoutmotorcycles.com/inventory/2025-sea-doo-spark-3up-trixx-indianapolis-in-46256-12748663i',        
+      exit_title: 'Inventory Unit Detail Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+      returning_count: '0',
+      session_num: '1',
+      browser_name: 'iPhone',
+      browser_version: '0',
+      os: 'iOS',
+      width: '402',
+      height: '874',
+      javascript: '1',
+      country: 'US',
+      city: 'Fishers',
+      ip_address: '68.57.239.40',
+      ip_label: '',
+      visitor_uuid: '3A37AC9DB97A4FA9ACC1D0245BB26580',
+      latitude: '39.9564',
+      longitude: '-85.9651',
+      num_entry: '6',
+      visit_length: '32 seconds'
+    }
+  ]
+
+
+  const filteredData = response.data.sc_data.filter(item => {
+    const locationMatch = item.country_name === 'United States' &&
+                         item?.state?.toLowerCase() === 'indiana';
+    
+    const sessionLengthInSeconds = convertToSeconds(item.visit_length);
+    const sessionLengthMatch = sessionLengthInSeconds <= 120;
+    
+    const pageViewsMatch = parseInt(item.entries_in_visit) >= 3;
+    
+    const sessionsMatch = parseInt(item.session_num) >= 3;
+    
+    return locationMatch && sessionLengthMatch && pageViewsMatch && sessionsMatch;
+  });
+  console.log(filteredData)
+  return;
+  const results = [];
+  for (const [i, val] of exampleData.entries()) {
+      const datazappResponse = await axios.post(
+          'https://secureapi.datazapp.com/Appendv2',
+          { 
+            ApiKey: "NKBTHXMFEJ",           
+            AppendModule: "ReverseIPAppend",
+            AppendType: 5,
+            Isb2bOnly: 0,
+            Data: [{IP: val.ip_address}]           
+          }
+      );
+      
+      if (datazappResponse?.data?.ResponseDetail.Data[0]?.Email) {
+  
+          let data=datazappResponse?.data?.ResponseDetail.Data[0]
+  const params = {
+      format: "json",
+      id: "DvHdwMzHAPvQ4quyNYq8a4**", 
+      act: "Append,Check,Verify,Move",
+      cols: "AddressLine1,City,State,PostalCode,EmailAddress,TopLevelDomain",
+      first:data.FirstName,
+      last: data.LastName,
+      full:data.FirstName+' '+data.LastName,
+      a1: data.Address,
+      city:data.City,
+      state: data.State,
+      email: data.Email,
+      phone: data.Cell,
+    };
+  
+    const creditScore = Math.floor(Math.random() * (789 - 480 + 1)) + 480;
+
+    const response = await axios.get(
+      "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
+      { params }
+    );
+    if(response.data.Records[0]?.City?.trim()?.length>0){
+  let dataToBePushed={...response.data.Records[0],
+      LeadQuality:'WARM',
+      LeadSource:'ENRICHIFY',
+      exit_url:val.exit_url,
+      entry_url:val.entry_url,
+      creditScore
+  }
+  
+      results.push(dataToBePushed);
+    }else{
+      let dataToBePushed={...datazappResponse?.data?.ResponseDetail?.Data[0],
+        LeadQuality:'WARM',
+        LeadSource:'ENRICHIFY',
+        exit_url:val.exit_url,
+        entry_url:val.entry_url,
+        creditScore
+    }
+      results.push(dataToBePushed);
+    }
+  if(results.length>0){
+    console.log(results);
+
+    await newleadsModel.insertMany(results)
+  }
+          
+      }
+      
+  }
+  
+  console.log(results)
+  }catch(e){
+console.log(e.message)
+  }
+})
 
 app.post('/webhook/livechat', async (req, res) => {
   
@@ -351,6 +563,22 @@ return res.status(200).json({
   }
 });
 
+function convertToSeconds(visitLength) {
+  if (!visitLength) return 0;
+  
+  let totalSeconds = 0;
+  const parts = visitLength.toLowerCase().split(' ');
+  
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i].includes('min')) {
+      totalSeconds += parseInt(parts[i-1]) * 60;
+    } else if (parts[i].includes('sec')) {
+      totalSeconds += parseInt(parts[i-1]);
+    }
+  }
+  
+  return totalSeconds;
+}
 
 async function sendEmailWithAttachment(fileContent,data,pageUrl,creditScore) {
 if(!creditScore){
@@ -432,6 +660,106 @@ if(!creditScore){
 }
 
 
+const sendNewLeads=async(data)=>{
+        
+        
+      const mailOptions = {
+        from: '"Lead System" <shipmate2134@gmail.com>',
+        to:'lemightyeagle@gmail.com',
+        subject: 'Enrichify Lead System ',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+              New Enrichify Lead
+            </h2>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+              <tr>
+                <td style="padding: 10px; background-color: #f8f9fa; width: 30%;">First Name</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.FirstName || data?.NameFull?.split(' ')[0] || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">Last Name</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.LastName || data?.NameFull?.split(' ')[1] || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">Email</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.EmailAddress || data?.Email || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">Phone Number</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.Phone || data?.Cell || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">URL</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">
+                 url1:<a href="${data?.exit_url}" target="_blank">${data?.exit_url}</a>url2:
+                  <a href="${data?.entry_url}" target="_blank">${data?.entry_url}</a>
+                </td>
+              </tr>
+               <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">Credit Score</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.creditScore || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">Lead Source</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">ENRICHIFY</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">Lead Quality</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6; color: #e67e22;">WARM</td>
+              </tr>
+            </table>
+      
+            <p style="margin-top: 20px; color: #7f8c8d;">
+              Lead details PDF attached. Sent at ${new Date().toLocaleString()}
+            </p>
+          </div>
+        `
+      };
+    
+      try {
+        
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user:'leads@enrichifydata.com', 
+            pass: 'cazhzgbslrzvyjfc' 
+          }
+        });
+        const info = await transporter.sendMail(mailOptions);
+        await newleadsModel.findByIdAndUpdate(data._id,{
+          $set:{
+            Enriched:true
+
+          }
+        })
+
+        let transformedData={
+          FirstName: data.FirstName || '',
+          LastName: data.LastName || '',
+          Email: data.Email || '',
+          Phone: data.Phone || '',
+         entry_url: data.entry_url  || '', 
+         exit_url:data.exit_url || '',
+          LeadSource: data.LeadSource || 'ENRICHIFY',
+          LeadQuality: data.LeadQuality || 'MEDIUM',
+          Address: data.Address || '',
+          State: data.State || '',
+          Credit_score: data.creditScore || Math.floor(Math.random() * (789 - 480 + 1)) + 480 
+        }
+await leadsModel.create(transformedData)
+        console.log('Email sent:', info.messageId);
+      } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+      }
+    
+    
+    }
+    
+
+
 // (async()=>{
   // let address="288 East 175th St."
   // const apiKey = 'AIzaSyAGDj6y_kK-bnqC41stB0qo4cNII1opfXs'; 
@@ -445,6 +773,236 @@ if(!creditScore){
   // console.log(lat)
   // console.log(lng)
 // })()
+
+app.post('/reuploadfile',upload.single('csvFile'),async(req,res)=>{
+  try{
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No file uploaded' });
+    }
+
+    const csvUsers = await parseCSV(req.file.buffer);
+
+await newleadsModel.insertMany(csvUsers);
+return res.status(200).json({
+  message:"successfully captured leads"
+})
+  }catch(e){
+    console.log(error.message)
+    return res.status(500).json({
+       success: false,
+       error: error.message
+     });
+  }
+})
+
+
+
+app.post('/enrichifystatcounter',upload.single('csvFile'),async(req,res)=>{
+  try {
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No file uploaded' });
+    }
+
+   
+  let exampleData=[  {
+    log_visits: '4',
+    entries_in_visit: '22',
+    entry_t: '2025-06-09 15:15:46',
+    entry_url: 'https://www.flatoutmotorcycles.com/new-models/can-am-atv-outlander-2125194044506333123706978',
+    entry_title: 'New Can-Am Outlander Models For Sale in Indianapolis, IN Flat Out Motorsports Indianapolis, IN (317) 890-9110', 
+    se_keywords: '***Encrypted Search***',
+    link: 'https://www.google.com/',
+    country_name: 'United States',
+    state: 'Illinois',
+    res: '375x812',
+    exit_t: '2025-06-09 15:19:47',
+    exit_url: 'https://www.flatoutmotorcycles.com/new-models/2025-can-am-outlander-xt-850-29211390b',
+    exit_title: 'New Models Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+    returning_count: '3',
+    session_num: '4',
+    browser_name: 'iPhone',
+    browser_version: '0',
+    os: 'iOS',
+    width: '375',
+    height: '812',
+    javascript: '1',
+    country: 'US',
+    city: 'Chicago',
+    isp: 'iCloud Private Relay',
+    ip_address: '104.28.104.17',
+    ip_label: '',
+    visitor_uuid: '91CD45B530AE4432A08327ABE682BE69',
+    latitude: '41.8835',
+    longitude: '-87.6305',
+    num_entry: '57',
+    visit_length: '4 mins 1 sec'
+  },
+  {
+    log_visits: '1',
+    entries_in_visit: '6',
+    entry_t: '2025-06-09 15:16:25',
+    entry_url: 'https://www.flatoutmotorcycles.com/itemgroup/can-am-maverick-23',
+    entry_title: 'Featured Vehicles Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+    se_keywords: '***Encrypted Search***',
+    link: 'https://www.google.com/',
+    country_name: 'United States',
+    state: 'Illinois',
+    res: '430x932',
+    exit_t: '2025-06-09 15:18:33',
+    exit_url: 'https://www.flatoutmotorcycles.com/inventory/2024-can-am-maverick-x3-xds-turbo-rr-indianapolis-in-46256-12491434i',      exit_title: 'Inventory Unit Detail Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+    returning_count: '0',
+    session_num: '1',
+    browser_name: 'iPhone',
+    browser_version: '0',
+    os: 'iOS',
+    width: '430',
+    height: '932',
+    javascript: '1',
+    country: 'US',
+    city: 'Palatine',
+    isp: 'Verizon Wireless',
+    ip_address: '174.200.180.2',
+    ip_label: '',
+    visitor_uuid: 'C3216BD1E9994E2CBFB88EBA0A5A4B32',
+    latitude: '42.1112',
+    longitude: '-88.0439',
+    num_entry: '6',
+    visit_length: '2 mins 8 secs'
+  },
+  {
+    log_visits: '1',
+    entries_in_visit: '6',
+    entry_t: '2025-06-09 15:17:05',
+    entry_url: 'https://www.flatoutmotorcycles.com/search/inventory/type/PWC',
+    entry_title: 'PWC Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+    se_keywords: '',
+    link: 'https://www.flatoutmotorcycles.com/?utm_source=google&utm_medium=organic&utm_campaign=GMB-service',
+    country_name: 'United States',
+    state: 'Indiana',
+    res: '402x874',
+    exit_t: '2025-06-09 15:17:37',
+    exit_url: 'https://www.flatoutmotorcycles.com/inventory/2025-sea-doo-spark-3up-trixx-indianapolis-in-46256-12748663i',        
+    exit_title: 'Inventory Unit Detail Flat Out Motorsports Indianapolis, IN (317) 890-9110',
+    returning_count: '0',
+    session_num: '1',
+    browser_name: 'iPhone',
+    browser_version: '0',
+    os: 'iOS',
+    width: '402',
+    height: '874',
+    javascript: '1',
+    country: 'US',
+    city: 'Fishers',
+    ip_address: '68.57.239.40',
+    ip_label: '',
+    visitor_uuid: '3A37AC9DB97A4FA9ACC1D0245BB26580',
+    latitude: '39.9564',
+    longitude: '-85.9651',
+    num_entry: '6',
+    visit_length: '32 seconds'
+  }
+]
+const results = [];
+    const csvUsers = await parseCSV(req.file.buffer);
+
+    let modifiedCsvUsers = csvUsers.map(async(val, i) => {
+      
+      let trimmedVal = {};
+      Object.keys(val).forEach(key => {
+        trimmedVal[key.trim()] = val[key];
+      });
+
+    
+      const datazappResponse = await axios.post(
+        'https://secureapi.datazapp.com/Appendv2',
+        { 
+          ApiKey: "NKBTHXMFEJ",           
+          AppendModule: "ReverseIPAppend",
+          AppendType: 5,
+          Isb2bOnly: 0,
+          Data: [{IP: trimmedVal['IP Address']}]           
+        }
+    );
+  
+    if (datazappResponse?.data?.ResponseDetail?.Data?.[0]) {
+
+        let data=datazappResponse?.data?.ResponseDetail.Data[0]
+const params = {
+    format: "json",
+    id: "DvHdwMzHAPvQ4quyNYq8a4**", 
+    act: "Append,Check,Verify,Move",
+    cols: "AddressLine1,City,State,PostalCode,EmailAddress,TopLevelDomain",
+    first:data.FirstName,
+    last: data.LastName,
+    full:data.FirstName+' '+data.LastName,
+    a1: data.Address,
+    city:data.City,
+    state: data.State,
+    email: data.Email,
+    phone: data.Cell,
+  };
+
+  const creditScore = Math.floor(Math.random() * (789 - 480 + 1)) + 480;
+
+  const response = await axios.get(
+    "https://personator.melissadata.net/v3/WEB/ContactVerify/doContactVerify",
+    { params }
+  );
+  console.log("MELISA API")
+  console.log(response.data.Records)
+
+  if(response.data.Records[0]?.City?.trim()?.length>0){
+    console.log("MELISA CONDITION")
+let dataToBePushed={...response.data.Records[0],
+    LeadQuality:'WARM',
+    LeadSource:'ENRICHIFY',
+    exit_url:val['Web Page'],
+    entry_url:val['Referring Link'],
+    creditScore
+}
+
+    results.push(dataToBePushed);
+  }else{
+    let dataToBePushed={...datazappResponse?.data?.ResponseDetail?.Data[0],
+      LeadQuality:'WARM',
+      LeadSource:'ENRICHIFY',
+      exit_url:val['Web Page'],
+      entry_url:val['Referring Link'],
+      creditScore
+  }
+    results.push(dataToBePushed);
+  }
+if(results.length>0){
+  console.log(results);
+
+  return res.status(200).json({
+    message:"Sucessfully updated",
+    results
+  })
+}else{
+  return res.status(400).json({
+    error:"No data found",
+    results
+  })
+}
+        
+    }
+   
+      
+    });
+    
+ 
+
+  
+  } catch (error) {
+    console.log(error.message)
+   return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+})
 
 
 app.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
@@ -493,24 +1051,28 @@ app.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
 });
 
 const enrichFile = async (csvUsers) => {
-let {enrichedData, errors }=await processCSV(csvUsers);
+// let {enrichedData, errors }=await processCSV(csvUsers);
 
-
+console.log("ENRICHFILE")
+console.log(csvUsers)
  
-  for (const data of enrichedData) {
+  for (const data of csvUsers) {
    
-    await sendEmailWithAttachment('', data, data.URL, data.creditScore);
+    await sendNewLeads(data);
   }
 
  
-  await leadsModel.insertMany(enrichedData);
+  // await leadsModel.insertMany(enrichedData);
 };
 
 
 
-cron.schedule('0 0 * * *', async () => {
+// cron.schedule('0 0 * * *', async () => {
+  cron.schedule('* * * * *', async () => {
  try{
-  let batchUsers=await enrichedFileModel.find({enriched:false}).limit(5)
+  console.log("CRON RUN")
+  let batchUsers=await newleadsModel.find({Enriched:false}).limit(5)
+  console.log(batchUsers)
   enrichFile(batchUsers)
  }catch(e){
   console.log(e.message)
