@@ -22,17 +22,17 @@ const request=require('request');
 const enrichedFileModel = require('./fileData');
 app.use(bodyParser.json());
 app.use(cors());
-// mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',{
-//   serverSelectionTimeoutMS: 5000,
-//   socketTimeoutMS: 45000,
-//   family: 4
-// })
-
-mongoose.connect('mongodb://127.0.0.1/livechatleadsnew',{
+mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',{
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
   family: 4
 })
+
+// mongoose.connect('mongodb://127.0.0.1/livechatleadsnew',{
+//   serverSelectionTimeoutMS: 5000,
+//   socketTimeoutMS: 45000,
+//   family: 4
+// })
 
 // mongoose.connect('mongodb://127.0.0.1/livechatleads',{
 //   serverSelectionTimeoutMS: 5000,
