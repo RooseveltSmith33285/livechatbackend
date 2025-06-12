@@ -700,12 +700,21 @@ const sendNewLeads=async(data)=>{
                 <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.Phone || data?.Cell || 'N/A'}</td>
               </tr>
               <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">URL</td>
+                <td style="padding: 10px; background-color: #f8f9fa;">URLOne</td>
                 <td style="padding: 10px; border: 1px solid #dee2e6;">
-                 url1:<a href="${data?.exit_url}" target="_blank">${data?.exit_url}</a>url2:
+                <a href="${data?.exit_url}" target="_blank">${data?.exit_url}</a>
+                </td>
+          
+              </tr>
+              
+                <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">URLtwo</td>
+               
+                 <td style="padding: 10px; border: 1px solid #dee2e6;">
                   <a href="${data?.entry_url}" target="_blank">${data?.entry_url}</a>
                 </td>
               </tr>
+
                <tr>
                 <td style="padding: 10px; background-color: #f8f9fa;">Credit Score</td>
                 <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.creditScore || 'N/A'}</td>
