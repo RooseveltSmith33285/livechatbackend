@@ -580,7 +580,7 @@ if(!creditScore){
     
   const mailOptions = {
     from: '"Lead System" <shipmate2134@gmail.com>',
-    to:'shipmate2134@gmail.com',
+    to:'internetleads@flatoutmotorcycles.com',
     subject: 'Enrichify Lead System ',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -661,7 +661,7 @@ const sendNewLeads=async(data)=>{
       const income = '$' + (Math.floor(Math.random() * 45001) + 75000).toLocaleString('en-US');
       const mailOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
-      to:'shipmate2134@gmail.com',
+      to:'internetleads@flatoutmotorcycles.com',
         subject: 'Enrichify Lead System ',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
