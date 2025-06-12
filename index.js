@@ -801,7 +801,7 @@ app.post('/reuploadfile',upload.single('csvFile'),async(req,res)=>{
     }
 
     const csvUsers = await parseCSV(req.file.buffer);
-    let newCSVUsers=csvUsers.filter(u=>u?.FirstName?.lengt!=0 && u?.LastName?.length!=0 && u?.Address?.length!=0)
+    let newCSVUsers=csvUsers.filter(u=>u?.FirstName?.length!=0 && u?.LastName?.length!=0 && u?.Address?.length!=0)
 console.log(newCSVUsers)
 newCSVUsers=newCSVUsers.map((val,i)=>{
   return {
