@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 
 const leadsSchema = mongoose.Schema({
+    Title:{
+type:String
+    },
     FirstName: {
         type: String,
         required: true

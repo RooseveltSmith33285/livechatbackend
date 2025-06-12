@@ -516,6 +516,7 @@ console.log("melisa data")
       address,
       city,
       state,
+      Type:"Live",
       email,
       phone,
       City:city,
@@ -536,7 +537,8 @@ if(data){
 
 data={
   ...data,
-  Credit_score:creditScore
+  Credit_score:creditScore,
+  Type:"Live",
 }
 
 await sendEmailWithAttachment('',data,longestPage.url,creditScore);
@@ -595,6 +597,9 @@ if(!creditScore){
         <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
           New Enrichify Lead
         </h2>
+           <p style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+          Live
+        </p>
         
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
           <tr>
@@ -672,6 +677,10 @@ const sendNewLeads=async(data)=>{
             <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
               New Enrichify Lead
             </h2>
+
+               <p style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+             Website
+            </p>
             
             <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
               <tr>
@@ -746,6 +755,7 @@ const sendNewLeads=async(data)=>{
           LeadQuality: data.LeadQuality || 'MEDIUM',
           Address: data.Address || '',
           State: data.State || '',
+          Type:"Website",
           Credit_score: data.creditScore || Math.floor(Math.random() * (789 - 480 + 1)) + 480 
         }
 await leadsModel.create(transformedData)
@@ -845,6 +855,7 @@ app.post('/enrichifystatcounter', upload.single('csvFile'), async (req, res) => 
           cols: "AddressLine1,City,State,PostalCode,EmailAddress,TopLevelDomain",
           first: datazappData.FirstName,
           last: datazappData.LastName,
+          Type:"Website",
           full: `${datazappData.FirstName} ${datazappData.LastName}`,
           a1: datazappData.Address,
           city: datazappData.City,
@@ -875,6 +886,7 @@ app.post('/enrichifystatcounter', upload.single('csvFile'), async (req, res) => 
             LeadSource: 'ENRICHIFY',
             exit_url: trimmedVal['Web Page'],
             entry_url: trimmedVal['Referring Link'],
+            Type:"Website",
             creditScore
           });
         } else {
@@ -885,7 +897,8 @@ app.post('/enrichifystatcounter', upload.single('csvFile'), async (req, res) => 
             LeadSource: 'ENRICHIFY',
             exit_url: trimmedVal['Web Page'],
             entry_url: trimmedVal['Referring Link'],
-            creditScore
+            creditScore,
+            Type:"Website"
           });
         }
       } catch (error) {
