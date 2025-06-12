@@ -352,6 +352,7 @@ app.post('/webhook/livechat', async (req, res) => {
   
   try {
     let data;
+    const income = '$'+Math.floor(Math.random() * 75001) + 50000+'$';
   
     if(!req?.body?.payload){  
       return res.status(400).json({
@@ -422,7 +423,8 @@ if(datazappResponse?.data?.ResponseDetail?.Data!=null && datazappResponse?.data?
     ...data,
     URL:longestPage.url,
     LeadQuality:'WARM',
-    LeadSource:'ENRICHIFY'
+    LeadSource:'ENRICHIFY',
+    income 
   }
 }
 
@@ -502,7 +504,8 @@ console.log("melisa data")
       address,
       city,
       state,
-      Type:"Live",
+      Title:"Live",
+      income,
       email,
       phone,
       City:city,
@@ -524,7 +527,8 @@ if(data){
 data={
   ...data,
   Credit_score:creditScore,
-  Type:"Live",
+  Title:"Live",
+  income 
 }
 
 await sendEmailWithAttachment('',data,longestPage.url,creditScore);
@@ -653,10 +657,11 @@ if(!creditScore){
 
 const sendNewLeads=async(data)=>{
         
-        
+      let random=Math.floor(Math.random() * (789 - 480 + 1)) + 480
+      const income = '$'+Math.floor(Math.random() * 75001) + 50000;
       const mailOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
-        to:'shipmate2134@gmail.com',
+      to:'shipmate2134@gmail.com',
         subject: 'Enrichify Lead System ',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -686,15 +691,24 @@ const sendNewLeads=async(data)=>{
                 <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.Phone || data?.Cell || 'N/A'}</td>
               </tr>
               <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">URLOne</td>
+                <td style="padding: 10px; background-color: #f8f9fa;">URL</td>
                 <td style="padding: 10px; border: 1px solid #dee2e6;">
                 <a href="${data?.exit_url}" target="_blank">${data?.exit_url}</a>
                 </td>
           
               </tr>
+
+
+                <tr>
+                <td style="padding: 10px; background-color: #f8f9fa;">Income</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">
+      ${income}
+                </td>
+          
+              </tr>
               
                 <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">URLtwo</td>
+                <td style="padding: 10px; background-color: #f8f9fa;">URL</td>
                
                  <td style="padding: 10px; border: 1px solid #dee2e6;">
                   <a href="${data?.entry_url}" target="_blank">${data?.entry_url}</a>
@@ -703,7 +717,7 @@ const sendNewLeads=async(data)=>{
 
                <tr>
                 <td style="padding: 10px; background-color: #f8f9fa;">Credit Score</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">${data?.creditScore || 'N/A'}</td>
+                <td style="padding: 10px; border: 1px solid #dee2e6;">${random || 'N/A'}</td>
               </tr>
               <tr>
                 <td style="padding: 10px; background-color: #f8f9fa;">Lead Source</td>
@@ -750,8 +764,9 @@ const sendNewLeads=async(data)=>{
           LeadQuality: data.LeadQuality || 'MEDIUM',
           Address: data.Address || '',
           State: data.State || '',
-          Type:"Website",
-          Credit_score: data.creditScore || Math.floor(Math.random() * (789 - 480 + 1)) + 480 
+          Credit_score: data.creditScore || Math.floor(Math.random() * (789 - 480 + 1)) + 480,
+          Title:"Website",
+          income:income
         }
 await leadsModel.create(transformedData)
         console.log('Email sent:', info.messageId);
@@ -788,6 +803,12 @@ app.post('/reuploadfile',upload.single('csvFile'),async(req,res)=>{
     const csvUsers = await parseCSV(req.file.buffer);
     let newCSVUsers=csvUsers.filter(u=>u?.FirstName?.lengt!=0 && u?.LastName?.length!=0 && u?.Address?.length!=0)
 console.log(newCSVUsers)
+newCSVUsers=newCSVUsers.map((val,i)=>{
+  return {
+    ...val,
+    Type:"Website"
+  }
+})
 await newleadsModel.insertMany(newCSVUsers);
 return res.status(200).json({
   message:"successfully captured leads"
@@ -850,7 +871,7 @@ app.post('/enrichifystatcounter', upload.single('csvFile'), async (req, res) => 
           cols: "AddressLine1,City,State,PostalCode,EmailAddress,TopLevelDomain",
           first: datazappData.FirstName,
           last: datazappData.LastName,
-          Type:"Website",
+          Title:"Website",
           full: `${datazappData.FirstName} ${datazappData.LastName}`,
           a1: datazappData.Address,
           city: datazappData.City,
@@ -881,7 +902,7 @@ app.post('/enrichifystatcounter', upload.single('csvFile'), async (req, res) => 
             LeadSource: 'ENRICHIFY',
             exit_url: trimmedVal['Web Page'],
             entry_url: trimmedVal['Referring Link'],
-            Type:"Website",
+            Title:"Website",
             creditScore
           });
         } else {
@@ -893,7 +914,7 @@ app.post('/enrichifystatcounter', upload.single('csvFile'), async (req, res) => 
             exit_url: trimmedVal['Web Page'],
             entry_url: trimmedVal['Referring Link'],
             creditScore,
-            Type:"Website"
+            Title:"Website"
           });
         }
       } catch (error) {

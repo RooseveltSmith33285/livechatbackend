@@ -50,6 +50,9 @@ type:String
     Credit_score:{
         type:String,
         required:true
+    },
+    income:{
+        type:String
     }
 },{
     timestamps:true
