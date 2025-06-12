@@ -352,7 +352,7 @@ app.post('/webhook/livechat', async (req, res) => {
   
   try {
     let data;
-    const income = '$'+Math.floor(Math.random() * 75001) + 50000+'$';
+    const income = '$' + (Math.floor(Math.random() * 45001) + 75000).toLocaleString('en-US');
   
     if(!req?.body?.payload){  
       return res.status(400).json({
@@ -658,7 +658,7 @@ if(!creditScore){
 const sendNewLeads=async(data)=>{
         
       let random=Math.floor(Math.random() * (789 - 480 + 1)) + 480
-      const income = '$'+Math.floor(Math.random() * 75001) + 50000;
+      const income = '$' + (Math.floor(Math.random() * 45001) + 75000).toLocaleString('en-US');
       const mailOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
       to:'shipmate2134@gmail.com',
