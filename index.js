@@ -414,6 +414,8 @@ console.log(longestPage.url)
 
     
 
+    console.log("DATAZAPP DATA FOR WEBHOOK")
+    console.log(JSON.stringify(datazappResponse?.data))
 
    
 if(datazappResponse?.data?.ResponseDetail?.Data!=null && datazappResponse?.data?.ResponseDetail?.Data[0]?.FirstName?.length>0){
@@ -855,6 +857,8 @@ app.post('/enrichifystatcounter', upload.single('csvFile'), async (req, res) => 
             Data: [{ IP: trimmedVal['IP Address'] }]
           }
         );
+        console.log("STATCOUNTER DATAZAPP")
+        console.log(JSON.stringify(datazappResponse.data))
 
         if (!datazappResponse?.data?.ResponseDetail?.Data?.length) {
           console.log(`Row ${i + 1}: No DATAZAPP results`);
