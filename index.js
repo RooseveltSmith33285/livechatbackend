@@ -814,7 +814,7 @@ return res.status(200).json({
   message:"successfully captured leads"
 })
   }catch(e){
-    console.log(e)
+    console.log(e.message)
     return res.status(500).json({
        success: false,
        error: e.message
