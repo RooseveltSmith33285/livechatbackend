@@ -537,7 +537,10 @@ await sendEmailWithAttachment('',data,longestPage.url,creditScore);
 
 console.log("DATA TO BE INSERTED INTO MODEL")
 console.log(data)
-await leadsModel.create(data);
+let alreadyExists=await leadsModel.findOne({Email:data.Email})
+if(!alreadyExists){
+  await leadsModel.create(data);
+}
 
 
   
@@ -1014,12 +1017,136 @@ console.log(csvUsers)
 
 
 // cron.schedule('0 0 * * *', async () => {
-  cron.schedule('* * * * *', async () => {
+  cron.schedule('0 * * * *', async () => {
  try{
   console.log("CRON RUN")
-  let batchUsers=await newleadsModel.find({Enriched:false}).limit(5)
+  const batchUsers = await newleadsModel.find({ 
+    Enriched: false,
+    Email: { $ne: null, $exists: true }
+  });
+
+  const batchUsersLimit = await newleadsModel.find({ 
+    Enriched: false,
+    Email: { $ne: null, $exists: true }
+  }).limit(5);
+  
+  
+  const alreadyEnriched = await newleadsModel.find({ Enriched: true });
+  
+  let uniqueUnenriched = [];
+  let uniqueUnenrichedLimited=[];
+  const processedEmails = new Set();
+  const processedEmailsLimited = new Set();
+  for (let i = 0; i < batchUsers.length; i++) {
+    const currentEmail = batchUsers[i].Email;
+    
+  
+    if (processedEmails.has(currentEmail)) {
+      continue;
+    }
+    
+   
+    const alreadyExists = alreadyEnriched.some(u => u.Email === currentEmail);
+    
+    if (!alreadyExists) {
+      uniqueUnenriched.push(batchUsers[i]);
+      processedEmails.add(currentEmail);
+    }
+  }
+  
+
+  for (let i = 0; i < batchUsersLimit.length; i++) {
+    const currentEmail = batchUsersLimit[i].Email;
+    
+  
+    if (processedEmailsLimited.has(currentEmail)) {
+      continue;
+    }
+    
+   
+    const alreadyExists = alreadyEnriched.some(u => u.Email === currentEmail);
+    
+    if (!alreadyExists) {
+      uniqueUnenrichedLimited.push(batchUsers[i]);
+      processedEmailsLimited.add(currentEmail);
+    }
+  }
+  const count = uniqueUnenriched.length;
+  console.log("count")
+  console.log(count)
+  console.log('batchusers')
   console.log(batchUsers)
-  enrichFile(batchUsers)
+if(count<=15){
+  const mailOptions = {
+    from: '"Lead Enrichment System" <shipmate2134@gmail.com>',
+    to: 'lemightyeagle@gmail.com',
+    subject: '⚠️ Action Required: Your Leads Inventory Is Running Low',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <div style="text-align: center; margin-bottom: 25px;">
+          <div style="background-color: #fff8e1; border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 40px; color: #ffa000;">⚠️</span>
+          </div>
+          <h1 style="color: #d32f2f; margin: 0;">Leads Inventory Low</h1>
+        </div>
+        
+        <div style="background-color: #fffde7; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+          <p style="font-size: 18px; color: #5d4037; margin-top: 0;">
+            Your lead inventory has dropped below the recommended threshold. 
+            To maintain continuous enrichment processing:
+          </p>
+          
+          <div style="margin: 25px 0; text-align: center;">
+            <div style="display: inline-block; background: #ffecb3; border-radius: 16px; padding: 8px 25px;">
+              <span style="font-size: 32px; font-weight: bold; color: #e65100;">${count}</span>
+              <span style="display: block; font-size: 14px; color: #5d4037;">REMAINING LEADS</span>
+            </div>
+          </div>
+          
+          <p style="font-size: 16px; margin-bottom: 0;">
+            <strong>Immediate action is recommended</strong> to avoid interruptions in your lead processing pipeline.
+          </p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://leadfrontend.vercel.app" 
+             style="display: inline-block; background-color: #388e3c; color: white; 
+                    padding: 14px 35px; border-radius: 4px; font-size: 18px; 
+                    font-weight: bold; text-decoration: none; text-align: center;">
+            ➕ Add More Leads Now
+          </a>
+        </div>
+        
+        <div style="border-top: 1px solid #eee; padding-top: 20px; color: #757575;">
+          <h3 style="margin-top: 0;">Recommended Next Steps:</h3>
+          <ol style="padding-left: 20px;">
+            <li>Upload new lead lists through the dashboard</li>
+            <li>Check your integration connections</li>
+            <li>Review your lead acquisition sources</li>
+          </ol>
+          
+          <p style="font-size: 14px; margin-bottom: 5px;">
+            <strong>Need assistance?</strong> Reply to this email or contact our support team
+          </p>
+          <p style="font-size: 12px; color: #9e9e9e; margin-top: 25px;">
+            This is an automated notification. Current lead count as of ${new Date().toLocaleString()}
+          </p>
+        </div>
+      </div>
+    `
+  };
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user:'leads@enrichifydata.com', 
+      pass: 'cazhzgbslrzvyjfc' 
+    }
+  });
+  const info = await transporter.sendMail(mailOptions);
+}
+  console.log(uniqueUnenrichedLimited)
+  enrichFile(uniqueUnenrichedLimited)
  }catch(e){
   console.log(e.message)
  }
