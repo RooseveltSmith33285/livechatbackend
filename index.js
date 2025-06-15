@@ -26,7 +26,7 @@ mongoose.connect('mongodb+srv://user:user@cluster0.pfn059x.mongodb.net/?retryWri
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
   family: 4
-})
+})  
 
 // mongoose.connect('mongodb://127.0.0.1/livechatleadsnew',{
 //   serverSelectionTimeoutMS: 5000,
@@ -1079,7 +1079,7 @@ console.log(csvUsers)
 if(count<=15){
   const mailOptions = {
     from: '"Lead Enrichment System" <shipmate2134@gmail.com>',
-    to: 'lemightyeagle@gmail.com',
+    to: 'shipmate2134@gmail.com',
     subject: '⚠️ Action Required: Your Leads Inventory Is Running Low',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
