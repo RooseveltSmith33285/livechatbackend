@@ -1016,8 +1016,8 @@ console.log(csvUsers)
 
 
 
-// cron.schedule('0 0 * * *', async () => {
-  cron.schedule('0 * * * *', async () => {
+  // cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
  try{
   console.log("CRON RUN")
   const batchUsers = await newleadsModel.find({ 
