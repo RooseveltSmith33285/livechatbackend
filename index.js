@@ -1018,6 +1018,7 @@ console.log(csvUsers)
 
   // cron.schedule('0 * * * *', async () => {
 cron.schedule('* * * * *', async () => {
+  console.log("CRON BEFORE TRY")
  try{
   console.log("CRON RUN")
   const batchUsers = await newleadsModel.find({ 
@@ -1148,6 +1149,7 @@ if(count<=15){
   console.log(uniqueUnenrichedLimited)
   enrichFile(uniqueUnenrichedLimited)
  }catch(e){
+  console.log("CRON ERROR")
   console.log(e.message)
  }
 });
