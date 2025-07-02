@@ -1018,6 +1018,7 @@ console.log(csvUsers)
   // await leadsModel.insertMany(enrichedData);
 };
 
+app.get('/api/cron/enrich-leads',handler)
 export default async function handler(req, res) {
   // Verify the request is from Vercel Cron
   // if (req.headers['user-agent'] !== 'vercel-cron/1.0') {
