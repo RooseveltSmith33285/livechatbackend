@@ -97,6 +97,7 @@ const processCSV = async (csvUsers) => {
   return { enrichedData, errors };
 };
 
+app.get('/api/cron/enrich-leads',handler)
 
 app.get('/livechat', (req, res) => {
   res.send('Livechat is working!');
@@ -1018,8 +1019,8 @@ console.log(csvUsers)
   // await leadsModel.insertMany(enrichedData);
 };
 
-app.get('/api/cron/enrich-leads',handler)
-export default async function handler(req, res) {
+
+function handler(req, res) {
   // Verify the request is from Vercel Cron
   // if (req.headers['user-agent'] !== 'vercel-cron/1.0') {
   //   return res.status(401).json({ error: 'Unauthorized' });
