@@ -2,25 +2,20 @@
     "version": 2,
     "builds": [
       {
-        "src": "*.js",
+        "src": "api/cron/enrich-leads.js",
         "use": "@vercel/node"
       }
     ],
     "routes": [
       {
-        "src": "/(.*)",
-        "dest": "/"
+        "src": "/api/cron/enrich-leads",
+        "dest": "/api/cron/enrich-leads"
       }
     ],
-    "functions": {
-      "api/cron/*.js": {
-        "maxDuration": 300
-      }
-    },
     "crons": [
       {
         "path": "/api/cron/enrich-leads",
-        "schedule": "* * * * * *"
+        "schedule": "* * * * *"  
       }
     ]
   }

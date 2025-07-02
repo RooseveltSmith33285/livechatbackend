@@ -1020,9 +1020,9 @@ console.log(csvUsers)
 
 export default async function handler(req, res) {
   // Verify the request is from Vercel Cron
-  if (req.headers['user-agent'] !== 'vercel-cron/1.0') {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  // if (req.headers['user-agent'] !== 'vercel-cron/1.0') {
+  //   return res.status(401).json({ error: 'Unauthorized' });
+  // }
 
   try {
     console.log("CRON RUN - Vercel Cron Job Started:", new Date().toISOString());
