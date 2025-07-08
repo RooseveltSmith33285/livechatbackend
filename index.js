@@ -543,13 +543,13 @@ console.log("DATA TO BE INSERTED INTO MODEL")
 console.log(data)
 let alreadyExists=await leadsModel.findOne({Email:data.Email})
 if(!alreadyExists){
-  console.log("CREATING")
   await leadsModel.create(data);
-  
-   
 }
 
 
+  
+ 
+ 
 }
 
 return res.status(200).json({
@@ -1055,165 +1055,26 @@ console.log(csvUsers)
     if (!alreadyExists) {
       uniqueUnenriched.push(batchUsers[i]);
       processedEmails.add(currentEmail);
-      const mailOptions = {
-        from: '"Lead System" <shipmate2134@gmail.com>',
-        to: 'lemightyeagle@gmail.com',
-        subject: 'Lead Email Sent to Client',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
-              Lead Notification Sent to Client
-            </h2>
-            
-            <p style="color: #2c3e50; margin-bottom: 20px;">
-              This is to inform you that a lead notification email has been successfully sent to the client.
-            </p>
-            
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa; width: 30%;">Client Name</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">${batchUsers[i].FirstName || 'N/A'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Client Email</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">${batchUsers[i]?.Email || 'N/A'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Notification Type</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">Lead Confirmation</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Lead Source</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">ENRICHIFY</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Status</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6; color: #27ae60;">Successfully Sent</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Sent At</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">${new Date().toLocaleString()}</td>
-              </tr>
-            </table>
-      
-            <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #3498db;">
-              <h4 style="margin-top: 0; color: #2c3e50;">Next Steps</h4>
-              <ul style="margin-bottom: 0; color: #7f8c8d;">
-                <li>The client has been notified about their lead submission</li>
-                <li>Lead details have been recorded in the system</li>
-                <li>Please follow up with the client within 24 hours</li>
-              </ul>
-            </div>
-            
-            <p style="margin-top: 20px; color: #7f8c8d; font-size: 0.9em;">
-              This is an automated notification. Please do not reply to this email.
-            </p>
-          </div>
-        `
-      };
-        
-       const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user:'leads@enrichifydata.com', 
-              pass: 'cazhzgbslrzvyjfc' 
-            }
-          });
-          const info = await transporter.sendMail(mailOptions);
-    }else{
-      const mailFailedOptions = {
-        from: '"Lead System" <shipmate2134@gmail.com>',
-        to: 'lemightyeagle@gmail.com',
-        subject: 'Failed: Lead Already Exists',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #e74c3c; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">
-              ⚠️ Lead Submission Failed
-            </h2>
-            
-            <div style="background-color: #fdecea; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-              <p style="color: #c0392b; margin: 0; font-weight: bold;">
-                The lead could not be sent to the client because this lead already exists in our system.
-              </p>
-            </div>
-            
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa; width: 30%;">Client Name</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">${batchUsers[i].FirstName || 'N/A'} ${batchUsers[i].LastName || ''}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Client Email</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">${batchUsers[i].Email || 'N/A'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Phone Number</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">${batchUsers[i].PhoneNumber || batchUsers[i].Cell || 'N/A'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Lead Source</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">ENRICHIFY</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Status</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6; color: #e74c3c;">Failed - Duplicate Lead</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; background-color: #f8f9fa;">Attempted At</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">${new Date().toLocaleString()}</td>
-              </tr>
-            </table>
-      
-            <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #e74c3c;">
-              <h4 style="margin-top: 0; color: #2c3e50;">Recommended Actions</h4>
-              <ul style="margin-bottom: 0; color: #7f8c8d;">
-                <li>Check if this is a legitimate duplicate submission</li>
-                <li>Verify the client's information in the CRM</li>
-                <li>If this is a new inquiry, investigate potential system issues</li>
-                <li>Contact the client if follow-up is needed</li>
-              </ul>
-            </div>
-            
-            <p style="margin-top: 20px; color: #7f8c8d; font-size: 0.9em;">
-              System ID: ${Math.random().toString(36).substring(2, 10).toUpperCase()}
-              <br>
-              This is an automated notification. Please do not reply to this email.
-            </p>
-          </div>
-        `
-      };
-      
-      
-        
-       const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user:'leads@enrichifydata.com', 
-              pass: 'cazhzgbslrzvyjfc' 
-            }
-          });
-          const info = await transporter.sendMail(mailFailedOptions);
-       
     }
   }
   
 
-  // for (let i = 0; i < batchUsersLimit.length; i++) {
-  //   const currentEmail = batchUsersLimit[i].Email;
+  for (let i = 0; i < batchUsersLimit.length; i++) {
+    const currentEmail = batchUsersLimit[i].Email;
     
   
-  //   if (processedEmailsLimited.has(currentEmail)) {
-  //     continue;
-  //   }
+    if (processedEmailsLimited.has(currentEmail)) {
+      continue;
+    }
     
    
-  //   const alreadyExists = alreadyEnriched.some(u => u.Email === currentEmail);
+    const alreadyExists = alreadyEnriched.some(u => u.Email === currentEmail);
     
-  //   if (!alreadyExists) {
-  //     uniqueUnenrichedLimited.push(batchUsers[i]);
-  //     processedEmailsLimited.add(currentEmail);
-  //   }
-  // }
+    if (!alreadyExists) {
+      uniqueUnenrichedLimited.push(batchUsers[i]);
+      processedEmailsLimited.add(currentEmail);
+    }
+  }
   const count = uniqueUnenriched.length;
   console.log("count")
   console.log(count)
