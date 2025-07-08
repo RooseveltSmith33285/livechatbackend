@@ -543,7 +543,7 @@ console.log("DATA TO BE INSERTED INTO MODEL")
 console.log(data)
 let alreadyExists=await leadsModel.findOne({Email:data.Email})
 if(!alreadyExists){
-  
+  console.log("CREATING")
   await leadsModel.create(data);
   const mailOptions = {
     from: '"Lead System" <shipmate2134@gmail.com>',
