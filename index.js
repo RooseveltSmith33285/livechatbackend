@@ -547,8 +547,8 @@ if(!alreadyExists){
   await leadsModel.create(data);
   const mailOptions = {
     from: '"Lead System" <shipmate2134@gmail.com>',
-    to: 'lemightyeagle@gmail.com',
-    subject: 'Lead Email Sent to Client',
+    to: 'shipmate2134@gmail.com',
+    subject: 'Live Chat Lead Email Sent to Client',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
@@ -616,8 +616,8 @@ if(!alreadyExists){
 }else{
   const mailFailedOptions = {
     from: '"Lead System" <shipmate2134@gmail.com>',
-    to: 'lemightyeagle@gmail.com',
-    subject: 'Failed: Lead Already Exists',
+    to: 'shipmate2134@gmail.com',
+    subject: 'Failed:Live Chat Lead Already Exists',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #e74c3c; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">
@@ -1193,7 +1193,7 @@ console.log(csvUsers)
       processedEmails.add(currentEmail);
       const mailOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
-        to: 'lemightyeagle@gmail.com',
+        to: 'shipmate2134@gmail.com',
         subject: 'Lead Email Sent to Client',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1259,8 +1259,8 @@ console.log(csvUsers)
     }else{
       const mailFailedOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
-        to: 'lemightyeagle@gmail.com',
-        subject: 'Failed: Lead Already Exists',
+        to: 'shipmate2134@gmail.com',
+        subject: 'Failed:Live chat Lead Already Exists',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #e74c3c; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">
@@ -1359,7 +1359,7 @@ if(count<=15){
   const mailOptions = {
     from: '"Lead Enrichment System" <shipmate2134@gmail.com>',
     to: 'shipmate2134@gmail.com',
-    subject: '⚠️ Action Required: Your Leads Inventory Is Running Low',
+    subject: '⚠️ Action Required: Your Live Chat Leads Inventory Is Running Low',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
         <div style="text-align: center; margin-bottom: 25px;">
