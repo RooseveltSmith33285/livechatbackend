@@ -610,6 +610,9 @@ if(!alreadyExists){
         }
       });
       const info = await transporter.sendMail(mailOptions);
+
+      console.log("info for email that we send to mightyeagle")
+      console.log(info)
 }
 const mailFailedOptions = {
   from: '"Lead System" <shipmate2134@gmail.com>',
@@ -683,7 +686,8 @@ const mailFailedOptions = {
       }
     });
     const info = await transporter.sendMail(mailFailedOptions);
- 
+    console.log("info for failed email that we send to mightyeagle")
+    console.log(info)
 }
 
 return res.status(200).json({
