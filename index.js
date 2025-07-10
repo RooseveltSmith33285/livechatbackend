@@ -1163,11 +1163,11 @@ console.log(csvUsers)
       today.setHours(0, 0, 0, 0); // Start of today
       
       // Get lead counts
-      const todaysLeads = await leadModel.countDocuments({
+      const todaysLeads = await leadsModel.countDocuments({
         createdAt: { $gte: today }
       });
   
-      const totalLeads = await leadModel.countDocuments({});
+      const totalLeads = await leadsModel.countDocuments({});
   
       // Format the current date for display
       const formattedDate = new Date().toLocaleDateString('en-US', {
