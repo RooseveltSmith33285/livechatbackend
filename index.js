@@ -1157,6 +1157,90 @@ console.log(csvUsers)
 
 
 // cron.schedule('0 0 * * *', async () => {
+  cron.schedule('0 0 * * *', async () => {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Start of today
+      
+      // Get lead counts
+      const todaysLeads = await leadModel.countDocuments({
+        createdAt: { $gte: today }
+      });
+  
+      const totalLeads = await leadModel.countDocuments({});
+  
+      // Format the current date for display
+      const formattedDate = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+  
+      const mailOptions = {
+        from: '"Lead System" <shipmate2134@gmail.com>',
+        to: 'shipmate2134@gmail.com',
+        subject: 'Daily Lead Statistics Report',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+              Daily Lead Statistics - ${formattedDate}
+            </h2>
+            
+            <div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+              <h3 style="margin-top: 0; color: #2c3e50;">Lead Count Summary</h3>
+              
+              <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <div style="flex: 1; padding: 10px; background-color: #e8f4fd; border-radius: 5px; margin-right: 10px;">
+                  <h4 style="margin: 0 0 5px 0; color: #2980b9;">Today's Leads</h4>
+                  <p style="font-size: 24px; margin: 0; font-weight: bold; color: #27ae60;">${todaysLeads}</p>
+                </div>
+                
+                <div style="flex: 1; padding: 10px; background-color: #e8f4fd; border-radius: 5px;">
+                  <h4 style="margin: 0 0 5px 0; color: #2980b9;">Total Leads</h4>
+                  <p style="font-size: 24px; margin: 0; font-weight: bold; color: #27ae60;">${totalLeads}</p>
+                </div>
+              </div>
+              
+              <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #7f8c8d;">
+                Data updated at: ${new Date().toLocaleTimeString()}
+              </p>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #3498db;">
+              <h4 style="margin-top: 0; color: #2c3e50;">System Information</h4>
+              <ul style="margin-bottom: 0; color: #7f8c8d;">
+                <li>This report is generated automatically every hour</li>
+                <li>Lead data is collected from multiple sources</li>
+                <li>System is running normally</li>
+              </ul>
+            </div>
+            
+            <p style="margin-top: 20px; color: #7f8c8d; font-size: 0.9em;">
+              This is an automated report. Please contact support if you have any questions.
+            </p>
+          </div>
+        `
+      };
+        
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'leads@enrichifydata.com', 
+          pass: 'cazhzgbslrzvyjfc' 
+        }
+      });
+      
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent: %s', info.messageId);
+  
+    } catch (error) {
+      console.error('Error in cron job:', error);
+    }
+  });
+  
+
+
   cron.schedule('0 * * * *', async () => {
  try{
   console.log("CRON RUN")
