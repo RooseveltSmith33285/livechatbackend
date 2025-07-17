@@ -1279,7 +1279,7 @@ console.log(csvUsers)
       processedEmails.add(currentEmail);
       const mailOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
-        to: 'lemightyeagle@gmail.com',
+        to: 'shipmate2134@gmail.com',
         subject: 'Lead Email Sent to Client',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1357,7 +1357,7 @@ console.log(csvUsers)
     }else{
       const mailFailedOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
-        to: 'lemightyeagle@gmail.com',
+        to: 'shipmate2134@gmail.com',
         subject: 'Failed:Live chat Lead Already Exists',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
