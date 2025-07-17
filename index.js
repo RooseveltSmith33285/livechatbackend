@@ -970,6 +970,7 @@ return res.status(200).json({
 
 app.post('/enrichifystatcounter', upload.single('csvFile'), async (req, res) => {
   try {
+    console.log("THIS")
     if (!req.file) {
       return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
@@ -1242,6 +1243,7 @@ console.log(csvUsers)
 
 
   cron.schedule('0 * * * *', async () => {
+    
  try{
   console.log("CRON RUN")
   const batchUsers = await newleadsModel.find({ 
@@ -1277,7 +1279,7 @@ console.log(csvUsers)
       processedEmails.add(currentEmail);
       const mailOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
-        to: 'shipmate2134@gmail.com',
+        to: 'lemightyeagle@gmail.com',
         subject: 'Lead Email Sent to Client',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1340,10 +1342,22 @@ console.log(csvUsers)
             }
           });
           const info = await transporter.sendMail(mailOptions);
+         
+          batchUsers[i] = {
+            ...batchUsers[i].toObject(), 
+            Credit_score: Math.floor(Math.random() * (789 - 480 + 1)) + 480
+          };
+          
+        console.log("bathusers new")
+        console.log(batchUsers[i])
+        await leadsModel.create(batchUsers[i])
+        await newleadsModel.findByIdAndUpdate(batchUsers[i]._id, { 
+          Enriched: true,
+      });
     }else{
       const mailFailedOptions = {
         from: '"Lead System" <shipmate2134@gmail.com>',
-        to: 'shipmate2134@gmail.com',
+        to: 'lemightyeagle@gmail.com',
         subject: 'Failed:Live chat Lead Already Exists',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1413,7 +1427,10 @@ console.log(csvUsers)
             }
           });
           const info = await transporter.sendMail(mailFailedOptions);
-       
+          await newleadsModel.findByIdAndUpdate(batchUsers[i]._id, { 
+            Enriched: true,
+
+        });
     }
   }
   
