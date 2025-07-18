@@ -1254,7 +1254,7 @@ console.log(csvUsers)
   const batchUsersLimit = await newleadsModel.find({ 
     Enriched: false,
     Email: { $ne: null, $exists: true }
-  }).limit(5);
+  }).limit(10);
   
   
   const alreadyEnriched = await newleadsModel.find({ Enriched: true });
