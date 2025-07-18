@@ -546,7 +546,7 @@ if(!alreadyExists){
   console.log("CREATING")
   await leadsModel.create(data);
   const mailOptions = {
-    from: '"Lead System" <shipmate2134@gmail.com>',
+    from: 'leads@enrichifydata.com',
     to: 'shipmate2134@gmail.com',
     subject: 'Live Chat Lead Email Sent to Client',
     html: `
@@ -606,7 +606,7 @@ if(!alreadyExists){
         service: 'gmail',
         auth: {
           user:'leads@enrichifydata.com', 
-          pass: 'cazhzgbslrzvyjfc' 
+          pass: 'obeahkmflwnesojn' 
         }
       });
       const info = await transporter.sendMail(mailOptions);
@@ -615,7 +615,7 @@ if(!alreadyExists){
       console.log(info)
 }else{
   const mailFailedOptions = {
-    from: '"Lead System" <shipmate2134@gmail.com>',
+    from: 'leads@enrichifydata.com',
     to: 'shipmate2134@gmail.com',
     subject: 'Failed:Live Chat Lead Already Exists',
     html: `
@@ -679,7 +679,7 @@ if(!alreadyExists){
     service: 'gmail',
     auth: {
       user:'leads@enrichifydata.com', 
-      pass: 'cazhzgbslrzvyjfc' 
+      pass: 'obeahkmflwnesojn' 
     }
   });
   const info = await transporter.sendMail(mailFailedOptions);
@@ -724,7 +724,7 @@ if(!creditScore){
     
     
   const mailOptions = {
-    from: '"Lead System" <shipmate2134@gmail.com>',
+    from: 'leads@enrichifydata.com',
     to:'internetleads@flatoutmotorcycles.com',
     subject: 'Enrichify Lead System ',
     html: `
@@ -786,7 +786,7 @@ if(!creditScore){
       service: 'gmail',
       auth: {
         user:'leads@enrichifydata.com', 
-        pass: 'cazhzgbslrzvyjfc' 
+        pass: 'obeahkmflwnesojn' 
       }
     });
     const info = await transporter.sendMail(mailOptions);
@@ -805,7 +805,7 @@ const sendNewLeads=async(data)=>{
       let random=Math.floor(Math.random() * (789 - 480 + 1)) + 480
       const income = '$' + (Math.floor(Math.random() * 45001) + 75000).toLocaleString('en-US');
       const mailOptions = {
-        from: '"Lead System" <shipmate2134@gmail.com>',
+        from: 'leads@enrichifydata.com',
       to:'internetleads@flatoutmotorcycles.com',
         subject: 'Enrichify Lead System ',
         html: `
@@ -887,7 +887,7 @@ const sendNewLeads=async(data)=>{
           service: 'gmail',
           auth: {
             user:'leads@enrichifydata.com', 
-            pass: 'cazhzgbslrzvyjfc' 
+            pass: 'obeahkmflwnesojn' 
           }
         });
         const info = await transporter.sendMail(mailOptions);
@@ -1179,7 +1179,7 @@ console.log(csvUsers)
       });
   
       const mailOptions = {
-        from: '"Lead System" <shipmate2134@gmail.com>',
+        from: 'leads@enrichifydata.com',
         to: 'shipmate2134@gmail.com',
         subject: 'Daily Lead Statistics Report',
         html: `
@@ -1228,7 +1228,7 @@ console.log(csvUsers)
         service: 'gmail',
         auth: {
           user: 'leads@enrichifydata.com', 
-          pass: 'cazhzgbslrzvyjfc' 
+          pass: 'obeahkmflwnesojn' 
         }
       });
       
@@ -1242,7 +1242,8 @@ console.log(csvUsers)
   
 
 
-  cron.schedule('0 * * * *', async () => {
+  cron.schedule('* * * * *', async () => {
+
     
  try{
   console.log("CRON RUN")
@@ -1273,12 +1274,14 @@ console.log(csvUsers)
     
    
     const alreadyExists = alreadyEnriched.some(u => u.Email === currentEmail);
-    
+    console.log("ALREADY EXISTS")
+    console.log(alreadyExists)
     if (!alreadyExists) {
+      console.log("RUN")
       uniqueUnenriched.push(batchUsers[i]);
       processedEmails.add(currentEmail);
       const mailOptions = {
-        from: '"Lead System" <shipmate2134@gmail.com>',
+        from: 'leads@enrichifydata.com',
         to: 'shipmate2134@gmail.com',
         subject: 'Lead Email Sent to Client',
         html: `
@@ -1338,7 +1341,7 @@ console.log(csvUsers)
             service: 'gmail',
             auth: {
               user:'leads@enrichifydata.com', 
-              pass: 'cazhzgbslrzvyjfc' 
+              pass: 'obeahkmflwnesojn' 
             }
           });
           const info = await transporter.sendMail(mailOptions);
@@ -1356,7 +1359,7 @@ console.log(csvUsers)
       });
     }else{
       const mailFailedOptions = {
-        from: '"Lead System" <shipmate2134@gmail.com>',
+        from: 'leads@enrichifydata.com',
         to: 'shipmate2134@gmail.com',
         subject: 'Failed:Live chat Lead Already Exists',
         html: `
@@ -1423,7 +1426,7 @@ console.log(csvUsers)
             service: 'gmail',
             auth: {
               user:'leads@enrichifydata.com', 
-              pass: 'cazhzgbslrzvyjfc' 
+              pass: 'obeahkmflwnesojn' 
             }
           });
           const info = await transporter.sendMail(mailFailedOptions);
@@ -1458,7 +1461,7 @@ console.log(csvUsers)
   console.log(batchUsers)
 if(count<=15){
   const mailOptions = {
-    from: '"Lead Enrichment System" <shipmate2134@gmail.com>',
+    from: 'leads@enrichifydata.com',
     to: 'shipmate2134@gmail.com',
     subject: '⚠️ Action Required: Your Live Chat Leads Inventory Is Running Low',
     html: `
@@ -1520,7 +1523,7 @@ if(count<=15){
     service: 'gmail',
     auth: {
       user:'leads@enrichifydata.com', 
-      pass: 'cazhzgbslrzvyjfc' 
+      pass: 'obeahkmflwnesojn' 
     }
   });
   const info = await transporter.sendMail(mailOptions);
